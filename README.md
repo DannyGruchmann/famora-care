@@ -7,10 +7,9 @@ before one. Angular 21, zoneless, Supabase as the backend.
 
 ```bash
 npm install
-cp .env.example .env.local
 ```
 
-Then fill in the two values in `.env.local`. Both come from the Supabase dashboard under
+Create `.env.local` in the project root and fill in the two values below. Both come from the Supabase dashboard under
 **Project Settings -> API**:
 
 | Variable            | Where it comes from                      |
