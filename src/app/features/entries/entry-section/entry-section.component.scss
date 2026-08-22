@@ -1,0 +1,72 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.entry-section__heading {
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.entry-section__hint {
+  margin-top: var(--space-1);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+}
+
+.entry-section__empty {
+  margin-top: var(--space-3);
+  padding: var(--space-4);
+  border: 1px dashed var(--color-line-strong);
+  border-radius: var(--radius-xl);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-ink-soft);
+}
+
+.entry-section__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.entry-section__editor {
+  padding: var(--space-4);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-xl);
+  background-color: var(--color-surface);
+}
+
+.entry-section__add {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-3);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+
+  @include focus-ring;
+
+  &:hover {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary-soft);
+  }
+}
+
+.entry-section__add-icon {
+  width: 1rem;
+  height: 1rem;
+}

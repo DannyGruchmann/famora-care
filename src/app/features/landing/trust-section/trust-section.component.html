@@ -1,0 +1,41 @@
+<famora-thread-section label="Vertrauen">
+  <h2 class="trust-section__title">Ihre Daten bleiben Ihre.</h2>
+
+  <ul class="trust-section__list">
+    @for (point of points; track point.title) {
+      <li class="trust-section__item">
+        @switch (point.icon) {
+          @case ('server') {
+            <svg
+              lucideServer
+              class="trust-section__icon"
+              stroke-width="1.75"
+              aria-hidden="true"
+            ></svg>
+          }
+          @case ('lock') {
+            <svg
+              lucideLock
+              class="trust-section__icon"
+              stroke-width="1.75"
+              aria-hidden="true"
+            ></svg>
+          }
+          @default {
+            <svg
+              lucideUserX
+              class="trust-section__icon"
+              stroke-width="1.75"
+              aria-hidden="true"
+            ></svg>
+          }
+        }
+
+        <span>
+          <span class="trust-section__point-title">{{ point.title }}</span>
+          <span class="trust-section__point-text">{{ point.description }}</span>
+        </span>
+      </li>
+    }
+  </ul>
+</famora-thread-section>

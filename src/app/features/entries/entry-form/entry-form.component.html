@@ -1,0 +1,58 @@
+<form class="entry-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <famora-text-field
+    formControlName="title"
+    [fieldId]="fieldId('title')"
+    [label]="config().titleLabel"
+    [error]="titleError()"
+    [maxlength]="limits.title"
+    [placeholder]="config().titlePlaceholder"
+  />
+
+  @if (config().referenceLabel; as referenceLabel) {
+    <famora-text-field
+      formControlName="reference"
+      [fieldId]="fieldId('reference')"
+      [label]="referenceLabel"
+      [maxlength]="limits.reference"
+      [placeholder]="config().referencePlaceholder"
+    />
+  }
+
+  <famora-text-area
+    formControlName="detail"
+    [fieldId]="fieldId('detail')"
+    [label]="config().detailLabel"
+    [maxlength]="limits.detail"
+    [placeholder]="config().detailPlaceholder"
+  />
+
+  @if (config().contactLabel; as contactLabel) {
+    <famora-text-field
+      formControlName="contact"
+      [fieldId]="fieldId('contact')"
+      [label]="contactLabel"
+      [maxlength]="limits.contact"
+      [placeholder]="config().contactPlaceholder"
+    />
+  }
+
+  @if (config().caution; as caution) {
+    <p class="entry-form__caution">{{ caution }}</p>
+  }
+
+  <div class="entry-form__actions">
+    <famora-button type="submit" [disabled]="isSaving()">
+      {{ isSaving() ? 'Wird gespeichert …' : 'Speichern' }}
+    </famora-button>
+    <famora-button variant="ghost" [disabled]="isSaving()" (click)="cancelled.emit()">
+      Abbrechen
+    </famora-button>
+
+    @if (canDelete()) {
+      <span class="entry-form__spacer"></span>
+      <famora-button variant="danger" [disabled]="isSaving()" (click)="deleted.emit()">
+        Löschen
+      </famora-button>
+    }
+  </div>
+</form>

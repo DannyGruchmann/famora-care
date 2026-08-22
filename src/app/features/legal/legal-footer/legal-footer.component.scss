@@ -1,0 +1,28 @@
+@use 'mixins' as *;
+
+.legal-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1) var(--space-5);
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+}
+
+.legal-footer__link {
+  display: inline-flex;
+  align-items: center;
+  // Text links are only 20px tall otherwise, below the minimum touch target.
+  min-height: 1.75rem;
+  border-radius: var(--radius-sm);
+  text-underline-offset: 4px;
+  transition: color 0.2s;
+
+  @include focus-ring;
+
+  &:hover {
+    color: var(--color-ink);
+    text-decoration: underline;
+  }
+}

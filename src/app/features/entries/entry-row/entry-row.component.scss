@@ -1,0 +1,80 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.entry-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) 0.875rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-xl);
+  background-color: var(--color-surface);
+}
+
+.entry-row__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.entry-row__title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.375;
+  color: var(--color-ink);
+}
+
+.entry-row__reference {
+  margin-top: var(--space-1);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.entry-row__reference-label {
+  color: var(--color-ink-soft);
+}
+
+.entry-row__detail {
+  margin-top: var(--space-1);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--color-ink-muted);
+  white-space: pre-line;
+}
+
+.entry-row__contact {
+  margin-top: var(--space-1);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--color-ink-muted);
+}
+
+.entry-row__edit {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-full);
+  color: var(--color-ink-soft);
+  transition:
+    color 0.2s,
+    background-color 0.2s;
+
+  @include focus-ring;
+
+  &:hover {
+    background-color: var(--color-surface-soft);
+    color: var(--color-primary);
+  }
+}
+
+.entry-row__edit-icon {
+  width: 1rem;
+  height: 1rem;
+}

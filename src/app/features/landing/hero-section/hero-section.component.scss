@@ -1,0 +1,35 @@
+@use 'mixins' as *;
+
+.hero-section {
+  padding: var(--space-14) var(--space-5) var(--space-16);
+}
+
+.hero-section__brand {
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--color-primary);
+}
+
+.hero-section__title {
+  margin-top: var(--space-8);
+  font-size: 2.6rem;
+  line-height: 1.08;
+  color: var(--color-ink);
+
+  @include respond-from($bp-sm) {
+    font-size: 3rem;
+  }
+}
+
+.hero-section__accent {
+  color: var(--color-primary);
+}
+
+.hero-section__lead {
+  margin-top: var(--space-6);
+  max-width: 28rem;
+  font-size: 1.125rem;
+  line-height: 1.625;
+  color: var(--color-ink-muted);
+}

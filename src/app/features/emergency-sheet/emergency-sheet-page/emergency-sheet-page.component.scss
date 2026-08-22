@@ -1,0 +1,178 @@
+// Emergency sheet: the printable view of the register, plus its on-screen preview.
+
+@use 'mixins' as *;
+
+:host {
+  display: block;
+  padding: var(--space-6) var(--space-4) var(--space-12);
+}
+
+.emergency-sheet {
+  max-width: 46rem;
+  margin-inline: auto;
+}
+
+.emergency-sheet__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+}
+
+.emergency-sheet__print-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.emergency-sheet__paper {
+  padding: var(--space-8) var(--space-6);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-xl);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.emergency-sheet__header {
+  padding-bottom: var(--space-4);
+  border-bottom: 2px solid var(--color-ink);
+}
+
+.emergency-sheet__title {
+  font-size: 1.75rem;
+}
+
+.emergency-sheet__meta {
+  margin-top: var(--space-1);
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+}
+
+.emergency-sheet__lead {
+  margin-top: var(--space-5);
+  font-size: 0.9375rem;
+  color: var(--color-ink-muted);
+}
+
+.emergency-sheet__section {
+  margin-top: var(--space-8);
+}
+
+.emergency-sheet__section-title {
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-line-strong);
+  font-size: 1.125rem;
+}
+
+.emergency-sheet__entries {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin-top: var(--space-4);
+}
+
+.emergency-sheet__entry-title {
+  font-weight: 600;
+}
+
+.emergency-sheet__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+// Label column wide enough for "Wer weiß Bescheid?", the longest of the five. Below the small
+// breakpoint the pair stacks instead, so a narrow phone never squeezes the value into one word
+// per line.
+.emergency-sheet__field {
+  display: grid;
+  gap: 0 var(--space-4);
+
+  @include respond-from($bp-sm) {
+    grid-template-columns: 11rem 1fr;
+  }
+}
+
+.emergency-sheet__field-label {
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+}
+
+.emergency-sheet__field-value {
+  font-size: 0.9375rem;
+}
+
+.emergency-sheet__helpers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+  margin-top: var(--space-4);
+}
+
+.emergency-sheet__footer {
+  margin-top: var(--space-10);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-line-strong);
+}
+
+.emergency-sheet__note {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.emergency-sheet__source {
+  margin-top: var(--space-2);
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+}
+
+.emergency-sheet__blank {
+  max-width: 32rem;
+  margin-inline: auto;
+  padding-top: var(--space-16);
+  text-align: center;
+}
+
+.emergency-sheet__blank-title {
+  font-size: 1.5rem;
+}
+
+.emergency-sheet__blank-text {
+  margin-block: var(--space-3) var(--space-6);
+  color: var(--color-ink-muted);
+}
+
+// The screen shows a sheet of paper lying on a surface. On paper it is the paper, so the card
+// around it goes away — the page margin comes from @page in _print.scss.
+@media print {
+  :host {
+    padding: 0;
+  }
+
+  .emergency-sheet__actions {
+    display: none;
+  }
+
+  .emergency-sheet__paper {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  // Keeps a heading from ending up alone at the foot of a page, and stops an entry from being
+  // torn in half between its title and where the thing actually is.
+  .emergency-sheet__section-title {
+    break-after: avoid;
+  }
+
+  .emergency-sheet__entry {
+    break-inside: avoid;
+  }
+
+  .emergency-sheet__footer {
+    break-inside: avoid;
+  }
+}

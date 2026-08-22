@@ -1,0 +1,33 @@
+<a
+  class="folder-card"
+  [class.folder-card--prepare]="isPreparing()"
+  [routerLink]="path()"
+  [attr.aria-label]="folder().label + ', ' + progressLabel()"
+>
+  <span class="folder-card__icon" [class.folder-card__icon--prepare]="isPreparing()">
+    @if (isPreparing()) {
+      <svg lucideShieldCheck stroke-width="1.75" aria-hidden="true"></svg>
+    } @else {
+      <svg lucideHeartHandshake stroke-width="1.75" aria-hidden="true"></svg>
+    }
+  </span>
+
+  <span class="folder-card__body">
+    <span class="folder-card__title">{{ folder().label }}</span>
+    <span class="folder-card__meta">{{ modeLabel() }} · {{ progressLabel() }}</span>
+
+    @if (folder().nextDeadline; as deadline) {
+      <span class="folder-card__deadline">
+        <svg
+          lucideClock
+          class="folder-card__deadline-icon"
+          stroke-width="1.75"
+          aria-hidden="true"
+        ></svg>
+        <span class="folder-card__deadline-text">{{ deadline.title }} – {{ deadlineLabel() }}</span>
+      </span>
+    }
+  </span>
+
+  <famora-progress-ring [rate]="folder().completionRate" />
+</a>

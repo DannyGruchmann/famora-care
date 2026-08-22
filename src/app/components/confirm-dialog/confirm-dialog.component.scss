@@ -1,0 +1,34 @@
+.confirm-dialog {
+  margin: auto;
+  width: calc(100% - 2rem);
+  max-width: 24rem;
+  padding: var(--space-6);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-3xl);
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+
+  &::backdrop {
+    background-color: rgb(44 44 42 / 0.4);
+  }
+}
+
+.confirm-dialog__heading {
+  font-size: 1.25rem;
+  line-height: 1.375;
+  color: var(--color-ink);
+}
+
+.confirm-dialog__description {
+  margin-top: var(--space-3);
+  font-size: 0.875rem;
+  line-height: 1.625;
+  color: var(--color-ink-muted);
+}
+
+.confirm-dialog__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}

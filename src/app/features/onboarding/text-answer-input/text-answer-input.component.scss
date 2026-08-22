@@ -1,0 +1,18 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.text-answer__label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.text-answer__input {
+  @include field-input;
+
+  margin-top: var(--space-2);
+}

@@ -1,0 +1,20 @@
+<div class="legal-page-layout">
+  <header class="legal-page-layout__header">
+    <div class="legal-page-layout__bar">
+      <famora-icon-button label="Zurück" (click)="goBack()">
+        <svg lucideArrowLeft class="legal-page-layout__back-icon" aria-hidden="true"></svg>
+      </famora-icon-button>
+      <span class="legal-page-layout__eyebrow">Rechtliches</span>
+    </div>
+    <div class="legal-page-layout__rule"></div>
+  </header>
+
+  <main class="legal-page-layout__main">
+    <h1 class="legal-page-layout__heading">{{ heading() }}</h1>
+    <p class="legal-page-layout__intro">{{ intro() }}</p>
+
+    <ng-content />
+
+    <p class="legal-page-layout__updated">Stand: {{ lastUpdated }}</p>
+  </main>
+</div>

@@ -1,0 +1,29 @@
+<div class="entry-row">
+  <div class="entry-row__body">
+    <p class="entry-row__title">{{ entry().title }}</p>
+
+    @if (hasReference()) {
+      <p class="entry-row__reference">
+        <span class="entry-row__reference-label">{{ referenceLabel() }}:</span>
+        {{ entry().reference }}
+      </p>
+    }
+
+    @if (entry().detail !== '') {
+      <p class="entry-row__detail">{{ entry().detail }}</p>
+    }
+
+    @if (entry().contact !== '') {
+      <p class="entry-row__contact">{{ entry().contact }}</p>
+    }
+  </div>
+
+  <button
+    type="button"
+    class="entry-row__edit"
+    [attr.aria-label]="entry().title + ' bearbeiten'"
+    (click)="edit.emit()"
+  >
+    <svg lucidePencil class="entry-row__edit-icon" stroke-width="1.75" aria-hidden="true"></svg>
+  </button>
+</div>

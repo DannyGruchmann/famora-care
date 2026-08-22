@@ -1,0 +1,12 @@
+<header class="dashboard-app-bar">
+  <div class="dashboard-app-bar__inner">
+    <famora-icon-button label="Zurück" tone="dark" (click)="back.emit()">
+      <svg lucideArrowLeft class="dashboard-app-bar__icon" aria-hidden="true"></svg>
+    </famora-icon-button>
+
+    <span class="dashboard-app-bar__heading">{{ heading() }}</span>
+
+    <!-- Free space for the user menu, which floats above every page. -->
+    <span class="dashboard-app-bar__slot" aria-hidden="true"></span>
+  </div>
+</header>

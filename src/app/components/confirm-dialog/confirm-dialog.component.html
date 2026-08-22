@@ -1,0 +1,19 @@
+<dialog #dialog class="confirm-dialog" (cancel)="onDialogCancel($event)">
+  <h2 class="confirm-dialog__heading">{{ heading() }}</h2>
+  <p class="confirm-dialog__description">{{ description() }}</p>
+
+  <div class="confirm-dialog__actions">
+    <famora-button
+      variant="danger"
+      [fullWidth]="true"
+      [disabled]="confirmDisabled()"
+      (click)="confirmed.emit()"
+    >
+      {{ confirmLabel() }}
+    </famora-button>
+
+    <famora-button #cancelButton variant="secondary" [fullWidth]="true" (click)="cancelled.emit()">
+      {{ cancelLabel() }}
+    </famora-button>
+  </div>
+</dialog>

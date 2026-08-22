@@ -1,0 +1,30 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.documents-section__hint {
+  font-size: 0.875rem;
+  line-height: 1.625;
+  color: var(--color-ink-muted);
+}
+
+.documents-section__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.documents-section__title {
+  font-size: 0.95rem;
+  line-height: 1.375;
+  color: var(--color-ink);
+}
+
+.documents-section__detail {
+  margin-top: 0.125rem;
+  font-size: 0.875rem;
+  line-height: 1.375;
+  color: var(--color-ink-muted);
+}

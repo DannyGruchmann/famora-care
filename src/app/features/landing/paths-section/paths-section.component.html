@@ -1,0 +1,41 @@
+<famora-thread-section label="Ihr Einstieg">
+  <h2 class="paths-section__title">Wo stehen Sie gerade?</h2>
+
+  <div class="paths-section__options">
+    @for (option of options; track option.id) {
+      <!-- The path is already chosen here. It travels through the registration all the way into
+           the onboarding, which then does not ask for it again. -->
+      <a
+        class="paths-section__option"
+        [class.paths-section__option--prepare]="option.id !== afterDeath"
+        [routerLink]="target()"
+        [queryParams]="option.queryParams"
+      >
+        <span
+          class="paths-section__icon"
+          [class.paths-section__icon--prepare]="option.id !== afterDeath"
+        >
+          @if (option.id === afterDeath) {
+            <svg lucideHeartHandshake stroke-width="1.75" aria-hidden="true"></svg>
+          } @else {
+            <svg lucideShieldCheck stroke-width="1.75" aria-hidden="true"></svg>
+          }
+        </span>
+
+        <span class="paths-section__body">
+          <span class="paths-section__option-title">{{ option.title }}</span>
+          <span class="paths-section__option-text">{{ option.description }}</span>
+        </span>
+
+        <svg lucideArrowRight class="paths-section__arrow" aria-hidden="true"></svg>
+      </a>
+    }
+  </div>
+
+  <!-- Guests get this far and no further. That belongs before the click, not after: otherwise
+       someone picks their path and is surprised by a form — in a situation where nobody needs
+       any more surprises. -->
+  @if (!isSignedIn()) {
+    <p class="paths-section__note">Für beide Wege legen Sie zuerst ein Konto an.</p>
+  }
+</famora-thread-section>

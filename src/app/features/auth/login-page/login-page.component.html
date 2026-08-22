@@ -1,0 +1,62 @@
+<famora-auth-layout
+  heading="Anmeldung"
+  intro="Melden Sie sich an, um bei Ihrer Checkliste weiterzumachen."
+  [error]="serverError()"
+>
+  <form class="login-page__form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <famora-text-field
+      formControlName="email"
+      [fieldId]="fieldIds.email"
+      label="E-Mail-Adresse"
+      [error]="emailError()"
+      type="email"
+      autocomplete="email"
+    />
+
+    <div>
+      <famora-password-field
+        formControlName="password"
+        [fieldId]="fieldIds.password"
+        label="Passwort"
+        [error]="passwordError()"
+        autocomplete="current-password"
+      />
+
+      <!-- Deliberately quiet: the link must not compete with the sign-in button. -->
+      <div class="login-page__forgot">
+        <a class="login-page__forgot-link" [routerLink]="routes.forgotPassword">
+          Passwort vergessen?
+        </a>
+      </div>
+    </div>
+
+    <famora-button
+      class="login-page__submit"
+      type="submit"
+      [fullWidth]="true"
+      [disabled]="isSubmitting()"
+    >
+      {{ isSubmitting() ? 'Einen Moment …' : 'Anmelden' }}
+    </famora-button>
+  </form>
+
+  <!-- This page is the start page. Without a way past it, anyone opening Famora for the first
+       time would face a locked door and have to sign in just to find out what it is about. -->
+  <div class="login-page__divider">
+    <span class="login-page__divider-line" aria-hidden="true"></span>
+    <span class="login-page__divider-label">oder</span>
+    <span class="login-page__divider-line" aria-hidden="true"></span>
+  </div>
+
+  <famora-button variant="secondary" [fullWidth]="true" (click)="continueAsGuest()">
+    <svg lucideCompass class="login-page__guest-icon" aria-hidden="true"></svg>
+    Als Gast ansehen
+  </famora-button>
+
+  <p class="login-page__guest-note">Für die Checkliste brauchen Sie ein Konto.</p>
+
+  <ng-container switch>
+    Noch kein Konto?
+    <famora-auth-switch-link [target]="routes.register">Konto anlegen</famora-auth-switch-link>
+  </ng-container>
+</famora-auth-layout>

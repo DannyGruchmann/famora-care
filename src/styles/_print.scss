@@ -1,0 +1,20 @@
+// Print rules that belong to the document rather than to a single view: the sheet of paper
+// itself, and the app chrome that sits outside every route. What one page hides while printing
+// is that page's own business and stays in its own stylesheet.
+
+@media print {
+  @page {
+    size: A4;
+    margin: 18mm;
+  }
+
+  // The warm off-white ground costs ink and prints as a grey wash on most devices.
+  body {
+    background-color: #fff;
+    color: #000;
+  }
+
+  .app-shell__user-menu {
+    display: none;
+  }
+}

@@ -1,0 +1,40 @@
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+}
+
+.onboarding-progress {
+  background-color: color-mix(in srgb, var(--color-base) 90%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.onboarding-progress__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+}
+
+.onboarding-progress__back-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.onboarding-progress__caption {
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+}
+
+.onboarding-progress__track {
+  width: 100%;
+  height: 0.125rem;
+  background-color: var(--color-line);
+}
+
+.onboarding-progress__fill {
+  height: 100%;
+  background-color: var(--color-primary);
+  transition: width 0.3s;
+}

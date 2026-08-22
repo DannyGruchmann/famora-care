@@ -1,0 +1,20 @@
+<header class="onboarding-progress">
+  <div class="onboarding-progress__bar">
+    <famora-icon-button label="Zurück" (click)="back.emit()">
+      <svg lucideArrowLeft class="onboarding-progress__back-icon" aria-hidden="true"></svg>
+    </famora-icon-button>
+
+    <span class="onboarding-progress__caption">{{ caption() }}</span>
+  </div>
+
+  <div
+    class="onboarding-progress__track"
+    role="progressbar"
+    [attr.aria-valuenow]="rate()"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-label="Fortschritt im Onboarding"
+  >
+    <div class="onboarding-progress__fill" [style.width.%]="rate()"></div>
+  </div>
+</header>

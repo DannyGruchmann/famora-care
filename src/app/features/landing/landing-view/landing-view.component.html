@@ -1,0 +1,31 @@
+<div class="landing-view">
+  <div class="landing-view__content">
+    <famora-hero-section />
+
+    <!-- The thread: one continuous line behind the sections. The knots of the thread sections
+         sit exactly on it. -->
+    <div class="landing-view__sections">
+      <span class="landing-view__thread" aria-hidden="true"></span>
+
+      <div class="landing-view__stack">
+        <famora-paths-section />
+        <famora-steps-section />
+        <famora-trust-section />
+      </div>
+    </div>
+
+    <footer class="landing-view__footer">
+      <p class="landing-view__disclaimer">
+        Famora ist keine Rechts-, Steuer- oder Finanzberatung. Wir strukturieren Aufgaben und
+        Unterlagen – die Entscheidungen bleiben bei Ihnen.
+      </p>
+      <div class="landing-view__legal">
+        <famora-legal-footer />
+      </div>
+    </footer>
+  </div>
+
+  <famora-sticky-cta [note]="ctaNote()">
+    <famora-button [fullWidth]="true" (click)="start()">Schritt für Schritt beginnen</famora-button>
+  </famora-sticky-cta>
+</div>

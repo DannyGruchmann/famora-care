@@ -1,0 +1,76 @@
+@if (isLoading()) {
+  <famora-loading-screen label="Einen Moment, wir stellen Ihre Notfallmappe zusammen." />
+} @else if (isEmpty()) {
+  <div class="emergency-sheet__blank">
+    <h1 class="emergency-sheet__blank-title">Noch nichts zum Ausdrucken</h1>
+    <p class="emergency-sheet__blank-text">
+      In diesem Ordner steht bisher nichts. Tragen Sie zuerst ein, wo Ihre Unterlagen liegen –
+      danach lohnt sich der Weg zum Drucker.
+    </p>
+    <famora-button (click)="onBack()">Zurück zum Ordner</famora-button>
+  </div>
+} @else {
+  <div class="emergency-sheet">
+    <div class="emergency-sheet__actions">
+      <famora-button variant="ghost" (click)="onBack()">Zurück zum Ordner</famora-button>
+      <famora-button (click)="print()">
+        <svg lucidePrinter class="emergency-sheet__print-icon" aria-hidden="true"></svg>
+        Drucken
+      </famora-button>
+    </div>
+
+    <article class="emergency-sheet__paper">
+      <header class="emergency-sheet__header">
+        <h1 class="emergency-sheet__title">Notfallmappe</h1>
+        <p class="emergency-sheet__meta">{{ heading() }} · Stand {{ printedOn }}</p>
+      </header>
+
+      <p class="emergency-sheet__lead">{{ lead }}</p>
+
+      @for (section of sections(); track section.kind) {
+        <section class="emergency-sheet__section">
+          <h2 class="emergency-sheet__section-title">{{ section.label }}</h2>
+
+          <ul class="emergency-sheet__entries">
+            @for (entry of section.entries; track entry.id) {
+              <li class="emergency-sheet__entry">
+                <p class="emergency-sheet__entry-title">{{ entry.title }}</p>
+
+                @if (entry.fields.length > 0) {
+                  <dl class="emergency-sheet__fields">
+                    @for (field of entry.fields; track field.label) {
+                      <div class="emergency-sheet__field">
+                        <dt class="emergency-sheet__field-label">{{ field.label }}</dt>
+                        <dd class="emergency-sheet__field-value">{{ field.value }}</dd>
+                      </div>
+                    }
+                  </dl>
+                }
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
+      @if (helpers().length > 0) {
+        <section class="emergency-sheet__section">
+          <h2 class="emergency-sheet__section-title">Diese Menschen wissen Bescheid</h2>
+
+          <ul class="emergency-sheet__helpers">
+            @for (helper of helpers(); track helper.id) {
+              <li class="emergency-sheet__helper">{{ helper.name }}</li>
+            }
+          </ul>
+        </section>
+      }
+
+      <footer class="emergency-sheet__footer">
+        <p class="emergency-sheet__note">{{ safekeeping }}</p>
+        <p class="emergency-sheet__source">
+          Erstellt mit Famora. Maßgeblich ist immer der Ordner in der App – dieses Blatt hat den
+          Stand vom {{ printedOn }}.
+        </p>
+      </footer>
+    </article>
+  </div>
+}

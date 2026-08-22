@@ -1,0 +1,50 @@
+<section class="entry-section">
+  <h3 class="entry-section__heading">{{ config().label }}</h3>
+  <p class="entry-section__hint">{{ config().hint }}</p>
+
+  @if (entries().length === 0 && !isAdding()) {
+    <p class="entry-section__empty">{{ config().emptyText }}</p>
+  }
+
+  @if (entries().length > 0) {
+    <ul class="entry-section__list">
+      @for (entry of entries(); track entry.id) {
+        <li>
+          @if (editingId() === entry.id) {
+            <div class="entry-section__editor">
+              <famora-entry-form
+                [canDelete]="true"
+                [config]="config()"
+                [formId]="'edit-' + entry.id"
+                [value]="editingDraft()"
+                [isSaving]="isSaving()"
+                (submitted)="onChange(entry.id, $event)"
+                (cancelled)="closeForm()"
+                (deleted)="onRemove(entry.id)"
+              />
+            </div>
+          } @else {
+            <famora-entry-row [entry]="entry" [config]="config()" (edit)="openEditForm(entry.id)" />
+          }
+        </li>
+      }
+    </ul>
+  }
+
+  @if (isAdding()) {
+    <div class="entry-section__editor">
+      <famora-entry-form
+        [config]="config()"
+        [formId]="'add-' + config().kind"
+        [isSaving]="isSaving()"
+        (submitted)="onAdd($event)"
+        (cancelled)="closeForm()"
+      />
+    </div>
+  } @else {
+    <button type="button" class="entry-section__add" (click)="openAddForm()">
+      <svg lucidePlus class="entry-section__add-icon" stroke-width="2" aria-hidden="true"></svg>
+      Eintrag hinzufügen
+    </button>
+  }
+</section>

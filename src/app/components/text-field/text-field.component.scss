@@ -1,0 +1,13 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.text-field__input {
+  @include field-input;
+}
+
+.text-field__input--invalid {
+  @include field-input-invalid;
+}

@@ -1,0 +1,48 @@
+@if (store.currentQuestion(); as question) {
+  <div class="onboarding-page">
+    <famora-onboarding-progress
+      [stepIndex]="store.stepIndex()"
+      [totalSteps]="store.totalSteps()"
+      (back)="onBack()"
+    />
+
+    <main class="onboarding-page__main">
+      <p class="onboarding-page__eyebrow">{{ question.eyebrow }}</p>
+      <h1 class="onboarding-page__title">{{ question.title }}</h1>
+
+      @if (question.hint; as hint) {
+        <p class="onboarding-page__hint">{{ hint }}</p>
+      }
+
+      <div class="onboarding-page__body">
+        <famora-question-body
+          [question]="question"
+          [selectedIds]="store.selectedIds()"
+          [blockedIds]="store.blockedIds()"
+          (optionChosen)="store.selectOption($event)"
+          (valueChanged)="store.setValue($event)"
+        />
+      </div>
+
+      @if (saveError(); as error) {
+        <p class="onboarding-page__error" role="alert">{{ error }}</p>
+      }
+
+      <!-- At the bottom of the content rather than the screen edge: the mandatory links stay
+           reachable without pushing into a question. -->
+      <div class="onboarding-page__legal">
+        <famora-legal-footer />
+      </div>
+    </main>
+
+    <famora-sticky-cta>
+      <famora-button
+        [fullWidth]="true"
+        [disabled]="!store.canContinue() || isSaving()"
+        (click)="onContinue()"
+      >
+        {{ continueLabel() }}
+      </famora-button>
+    </famora-sticky-cta>
+  </div>
+}

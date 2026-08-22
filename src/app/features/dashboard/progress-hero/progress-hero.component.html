@@ -1,0 +1,28 @@
+<section class="progress-hero">
+  <div class="progress-hero__head">
+    <div>
+      <p class="progress-hero__eyebrow">Gesamtfortschritt</p>
+      <h2 class="progress-hero__title">
+        {{ doneCount() }} von {{ totalCount() }} Aufgaben erledigt
+      </h2>
+    </div>
+
+    <famora-progress-ring [rate]="completionRate()" />
+  </div>
+
+  <!-- No "Nächste Frist:" in front — with an overdue task that would be the wrong tone. -->
+  @if (nextDeadline(); as deadline) {
+    <div class="progress-hero__deadline">
+      <svg
+        lucideClock
+        class="progress-hero__deadline-icon"
+        stroke-width="1.75"
+        aria-hidden="true"
+      ></svg>
+      <p class="progress-hero__deadline-text">
+        {{ deadline.title }} –
+        <span class="progress-hero__deadline-days">{{ deadlineLabel() }}</span>
+      </p>
+    </div>
+  }
+</section>

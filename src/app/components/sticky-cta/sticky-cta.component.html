@@ -1,0 +1,9 @@
+<div class="sticky-cta">
+  <div class="sticky-cta__inner">
+    <ng-content />
+
+    @if (note(); as noteText) {
+      <p class="sticky-cta__note">{{ noteText }}</p>
+    }
+  </div>
+</div>

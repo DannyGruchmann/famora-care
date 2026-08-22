@@ -1,0 +1,13 @@
+<famora-thread-section label="So läuft es ab">
+  <h2 class="steps-section__title">Drei Schritte, mehr nicht.</h2>
+
+  <ol class="steps-section__list">
+    @for (step of steps; track step.number) {
+      <li>
+        <span class="steps-section__number">{{ step.number }}</span>
+        <h3 class="steps-section__step-title">{{ step.title }}</h3>
+        <p class="steps-section__step-text">{{ step.description }}</p>
+      </li>
+    }
+  </ol>
+</famora-thread-section>

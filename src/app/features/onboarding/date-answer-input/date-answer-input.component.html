@@ -1,0 +1,12 @@
+<div>
+  <label class="date-answer__label" [attr.for]="fieldId()">{{ label() }}</label>
+
+  <input
+    class="date-answer__input"
+    [id]="fieldId()"
+    type="date"
+    [value]="value()"
+    [max]="maxDate"
+    (input)="onInput($event)"
+  />
+</div>

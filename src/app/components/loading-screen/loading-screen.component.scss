@@ -1,0 +1,29 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.loading-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+}
+
+.loading-screen__spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-ink-soft);
+  animation: loading-screen-spin 1s linear infinite;
+}
+
+.loading-screen__label {
+  @include sr-only;
+}
+
+@keyframes loading-screen-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

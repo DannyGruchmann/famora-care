@@ -1,0 +1,40 @@
+:host {
+  display: block;
+}
+
+.dashboard-app-bar {
+  // The bottom padding carries the progress card, which is pulled up over the edge.
+  padding: var(--space-3) var(--space-3) var(--space-16);
+  background-color: var(--color-primary);
+  color: var(--color-on-filled);
+}
+
+.dashboard-app-bar__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  max-width: 42rem;
+  margin-inline: auto;
+}
+
+.dashboard-app-bar__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.dashboard-app-bar__heading {
+  flex: 1;
+  min-width: 0;
+  padding-inline: var(--space-2);
+  overflow: hidden;
+  font-weight: 500;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-app-bar__slot {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+}

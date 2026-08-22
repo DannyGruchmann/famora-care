@@ -1,0 +1,63 @@
+:host {
+  display: block;
+}
+
+.progress-hero {
+  padding: var(--space-5);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-2xl);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.progress-hero__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.progress-hero__eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-ink-soft);
+}
+
+.progress-hero__title {
+  margin-top: var(--space-2);
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--color-ink);
+}
+
+.progress-hero__deadline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  padding: var(--space-3) 0.875rem;
+  border-radius: var(--radius-xl);
+  background-color: var(--color-accent-soft);
+}
+
+.progress-hero__deadline-icon {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-danger);
+}
+
+.progress-hero__deadline-text {
+  font-size: 0.875rem;
+  line-height: 1.375;
+  color: var(--color-ink);
+}
+
+.progress-hero__deadline-days {
+  font-weight: 500;
+  color: var(--color-danger);
+}

@@ -1,0 +1,7 @@
+// Global stylesheet. These four are the only files in the app that emit CSS outside a component:
+// _fonts.scss declares the self-hosted @font-face rules, _tokens.scss the custom properties on
+// :root, _base.scss the element defaults, and _print.scss the page setup for a printout.
+@use './styles/fonts';
+@use './styles/tokens';
+@use './styles/base';
+@use './styles/print';

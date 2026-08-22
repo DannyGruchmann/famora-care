@@ -1,0 +1,43 @@
+<label class="task-item__label">
+  <input
+    type="checkbox"
+    class="task-item__checkbox"
+    [checked]="task().done"
+    [disabled]="task().isAutomatic"
+    (change)="toggled.emit()"
+  />
+
+  <span class="task-item__text">
+    <span class="task-item__title" [class.task-item__title--done]="task().done">
+      {{ task().title }}
+    </span>
+
+    <!-- Finished items should not clutter the list — detail and deadline only while open. -->
+    @if (!task().done) {
+      <span class="task-item__detail">{{ task().detail }}</span>
+
+      @if (task().daysLeft !== null) {
+        <span class="task-item__deadline" [class.task-item__deadline--overdue]="isOverdue()">
+          {{ deadlineLabel() }}
+        </span>
+      }
+    }
+  </span>
+</label>
+
+<!-- Outside the label: otherwise a click on the dropdown would tick the task off. -->
+@if (showsAssignment()) {
+  <div class="task-item__assignment">
+    <label class="task-item__assignment-label" [attr.for]="assignId()">
+      Wer übernimmt „{{ task().title }}“?
+    </label>
+    <select class="task-item__select" [attr.id]="assignId()" (change)="onAssignChange($event)">
+      <option value="" [selected]="task().assignedTo === null">Noch niemand</option>
+      @for (helper of helpers(); track helper.id) {
+        <option [value]="helper.id" [selected]="helper.id === task().assignedTo">
+          {{ helper.name }}
+        </option>
+      }
+    </select>
+  </div>
+}

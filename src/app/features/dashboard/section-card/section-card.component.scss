@@ -1,0 +1,75 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.section-card {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-2xl);
+  background-color: var(--color-surface);
+}
+
+.section-card__toggle {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.875rem;
+  padding: var(--space-4);
+  border-radius: var(--radius-2xl);
+  text-align: left;
+
+  @include focus-ring(-2px);
+}
+
+.section-card__badge {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-xl);
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.section-card__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.section-card__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.section-card__heading {
+  display: block;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.section-card__subtitle {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+}
+
+.section-card__chevron {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-ink-soft);
+  transition: transform 0.2s;
+}
+
+.section-card__chevron--open {
+  transform: rotate(180deg);
+}
+
+.section-card__body {
+  padding: var(--space-4);
+  border-top: 1px solid var(--color-line);
+}

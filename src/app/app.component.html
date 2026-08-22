@@ -1,0 +1,10 @@
+<!--
+  Outside the routes: the account belongs to the app, not to a page. Deferred, because the menu
+  pulls in the Supabase client and its icons — on the landing page, which needs no backend at all,
+  that would sit in the initial bundle for nothing. It renders nothing while signed out anyway.
+-->
+@defer (on idle) {
+  <famora-user-menu class="app-shell__user-menu" />
+}
+
+<router-outlet />

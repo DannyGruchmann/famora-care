@@ -1,0 +1,18 @@
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.text-area__input {
+  @include field-input;
+
+  // Vertical only: sideways resizing breaks the column it sits in.
+  resize: vertical;
+  min-height: 4.5rem;
+  line-height: 1.55;
+}
+
+.text-area__input--invalid {
+  @include field-input-invalid;
+}

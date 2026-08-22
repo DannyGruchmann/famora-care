@@ -1,0 +1,30 @@
+<p class="entries-panel__hint">{{ hint() }}</p>
+
+@switch (store.status()) {
+  @case ('loading') {
+    <p class="entries-panel__state" role="status">Einen Moment, wir holen Ihre Einträge.</p>
+  }
+  @case ('error') {
+    <p class="entries-panel__state entries-panel__state--error" role="alert">
+      {{ store.error() ?? 'Ihre Einträge lassen sich gerade nicht laden.' }}
+    </p>
+  }
+  @default {
+    @if (store.error(); as error) {
+      <p class="entries-panel__state entries-panel__state--error" role="alert">{{ error }}</p>
+    }
+
+    <div class="entries-panel__sections">
+      @for (section of store.sections(); track section.config.kind) {
+        <famora-entry-section
+          [config]="section.config"
+          [entries]="section.entries"
+          [isSaving]="store.isSaving()"
+          (added)="onAdd(section.config.kind, $event)"
+          (changed)="onChange($event)"
+          (removed)="onRemove($event)"
+        />
+      }
+    </div>
+  }
+}

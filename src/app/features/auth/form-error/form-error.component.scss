@@ -1,0 +1,20 @@
+// Fills the notice slot of the auth layout, which keeps the room for it free in advance.
+:host {
+  display: block;
+  width: 100%;
+}
+
+.form-error {
+  padding: 0.625rem var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
+  border-radius: var(--radius-xl);
+  background-color: color-mix(in srgb, var(--color-danger) 5%, transparent);
+  font-size: 0.875rem;
+  // Tighter than the body default: at 320px the longest message runs to four lines, and every
+  // one of them is height the slot above has to keep free.
+  line-height: 1.5;
+  text-align: left;
+  color: var(--color-danger);
+  // Focus lands here programmatically; a ring would read as an interactive element.
+  outline: none;
+}

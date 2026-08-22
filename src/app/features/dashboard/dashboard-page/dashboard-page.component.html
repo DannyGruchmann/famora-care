@@ -1,0 +1,121 @@
+@if (isLoading()) {
+  <famora-loading-screen label="Einen Moment, wir holen Ihren Ordner." />
+} @else if (readyPreset(); as preset) {
+  <div class="dashboard-page">
+    <famora-dashboard-app-bar [heading]="heading()" (back)="onBack()" />
+
+    <div class="dashboard-page__body">
+      <div class="dashboard-page__hero">
+        <famora-progress-hero
+          [doneCount]="store.doneCount()"
+          [totalCount]="store.tasks().length"
+          [completionRate]="store.completionRate()"
+          [nextDeadline]="store.nextDeadline()"
+        />
+      </div>
+
+      @if (store.saveError(); as saveError) {
+        <div class="dashboard-page__notice">
+          <p class="dashboard-page__save-error" role="alert">{{ saveError }}</p>
+        </div>
+      }
+
+      <div class="dashboard-page__sections">
+        @if (isPreparing()) {
+          <famora-section-card
+            icon="register"
+            heading="Mein Ordner"
+            [subtitle]="registerSubtitle()"
+            [defaultOpen]="true"
+          >
+            <famora-entries-panel
+              hint="Was hier steht, findet Ihre Familie im Ernstfall wieder. Kein Dokument wird hochgeladen – nur wo es liegt und wer weiterhilft."
+            />
+
+            <div class="dashboard-page__sheet">
+              <p class="dashboard-page__sheet-text">
+                An dieses Konto kommt im Ernstfall niemand außer Ihnen. Drucken Sie die Notfallmappe
+                aus und legen Sie sie zu Ihren Papieren.
+              </p>
+
+              <a class="dashboard-page__sheet-link" [routerLink]="sheetPath()">
+                <svg lucidePrinter class="dashboard-page__sheet-icon" aria-hidden="true"></svg>
+                Notfallmappe ansehen
+              </a>
+            </div>
+          </famora-section-card>
+        }
+
+        <famora-section-card icon="checklist" heading="Checkliste" [subtitle]="checklistSubtitle()">
+          <div class="dashboard-page__groups">
+            @for (urgency of filledUrgencies(); track urgency) {
+              <div>
+                <p class="dashboard-page__group-label">{{ preset.urgencyLabels[urgency] }}</p>
+                <ul class="dashboard-page__tasks">
+                  @for (task of store.tasksByUrgency()[urgency]; track task.id) {
+                    <li>
+                      <famora-task-item
+                        [task]="task"
+                        [helpers]="store.helpers()"
+                        (toggled)="store.toggleTask(task.id)"
+                        (assigned)="store.assignTask(task.id, $event)"
+                      />
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+          </div>
+        </famora-section-card>
+
+        <famora-section-card icon="documents" heading="Unterlagen" [subtitle]="documentsSubtitle()">
+          <famora-documents-section [documents]="store.documents()" [hint]="preset.documentsHint" />
+        </famora-section-card>
+
+        <famora-section-card
+          icon="family"
+          heading="Familie"
+          [subtitle]="helperSubtitle()"
+          [defaultOpen]="store.familyOpen()"
+        >
+          <famora-family-section
+            [helpers]="store.helpers()"
+            [hint]="preset.familyHint"
+            (added)="store.addHelper($event)"
+            (removed)="store.removeHelper($event)"
+          />
+        </famora-section-card>
+      </div>
+
+      <div class="dashboard-page__footer">
+        <div class="dashboard-page__delete">
+          <famora-button variant="danger" (click)="openDeleteDialog()">
+            <svg lucideTrash2 class="dashboard-page__delete-icon" aria-hidden="true"></svg>
+            Löschen
+          </famora-button>
+        </div>
+
+        <famora-legal-footer />
+      </div>
+    </div>
+  </div>
+
+  <famora-confirm-dialog
+    [open]="isDeleteOpen()"
+    [heading]="deleteHeading()"
+    [description]="deleteDescription()"
+    [confirmLabel]="confirmLabel()"
+    [confirmDisabled]="isDeleting()"
+    (confirmed)="confirmDelete()"
+    (cancelled)="closeDeleteDialog()"
+  />
+} @else {
+  <div class="dashboard-page__failure">
+    <p class="dashboard-page__failure-text" role="alert">
+      {{ store.loadError() ?? 'Dieser Ordner lässt sich gerade nicht öffnen.' }}
+    </p>
+    <div class="dashboard-page__failure-action">
+      <famora-button (click)="store.retry()">Noch einmal versuchen</famora-button>
+    </div>
+  </div>
+}

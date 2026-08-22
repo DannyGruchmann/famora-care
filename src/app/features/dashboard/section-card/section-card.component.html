@@ -1,0 +1,58 @@
+<div class="section-card">
+  <button
+    type="button"
+    class="section-card__toggle"
+    [attr.aria-expanded]="open()"
+    (click)="toggle()"
+  >
+    <span class="section-card__badge">
+      @switch (icon()) {
+        @case ('checklist') {
+          <svg
+            lucideListChecks
+            class="section-card__icon"
+            stroke-width="1.75"
+            aria-hidden="true"
+          ></svg>
+        }
+        @case ('register') {
+          <svg
+            lucideNotebookPen
+            class="section-card__icon"
+            stroke-width="1.75"
+            aria-hidden="true"
+          ></svg>
+        }
+        @case ('documents') {
+          <svg
+            lucideFolderOpen
+            class="section-card__icon"
+            stroke-width="1.75"
+            aria-hidden="true"
+          ></svg>
+        }
+        @default {
+          <svg lucideUsers class="section-card__icon" stroke-width="1.75" aria-hidden="true"></svg>
+        }
+      }
+    </span>
+
+    <span class="section-card__text">
+      <span class="section-card__heading">{{ heading() }}</span>
+      <span class="section-card__subtitle">{{ subtitle() }}</span>
+    </span>
+
+    <svg
+      lucideChevronDown
+      class="section-card__chevron"
+      [class.section-card__chevron--open]="open()"
+      aria-hidden="true"
+    ></svg>
+  </button>
+
+  @if (open()) {
+    <div class="section-card__body">
+      <ng-content />
+    </div>
+  }
+</div>

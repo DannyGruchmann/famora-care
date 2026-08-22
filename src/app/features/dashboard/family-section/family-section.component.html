@@ -1,0 +1,38 @@
+<p class="family-section__hint">{{ hint() }}</p>
+
+@if (helpers().length > 0) {
+  <ul class="family-section__list">
+    @for (helper of helpers(); track helper.id) {
+      <li class="family-section__entry">
+        <span class="family-section__person">
+          <span class="family-section__name">{{ helper.name }}</span>
+          <span class="family-section__load">{{ describeLoad(helper.openTaskCount) }}</span>
+        </span>
+
+        <button
+          type="button"
+          class="family-section__remove"
+          [attr.aria-label]="helper.name + ' entfernen'"
+          (click)="removed.emit(helper.id)"
+        >
+          <svg lucideX class="family-section__remove-icon" aria-hidden="true"></svg>
+        </button>
+      </li>
+    }
+  </ul>
+}
+
+<form class="family-section__form" (submit)="onSubmit($event)">
+  <label class="family-section__field-label" for="helper-name">Name der Person</label>
+  <input
+    id="helper-name"
+    type="text"
+    class="family-section__input"
+    placeholder="Name eintragen"
+    [value]="name()"
+    (input)="onNameInput($event)"
+  />
+  <famora-button type="submit" variant="secondary" [disabled]="isEmpty()">
+    Hinzufügen
+  </famora-button>
+</form>

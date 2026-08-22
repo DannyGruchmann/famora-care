@@ -1,0 +1,10 @@
+<button
+  #control
+  class="button"
+  [class]="variantClass()"
+  [class.button--full-width]="fullWidth()"
+  [type]="type()"
+  [disabled]="disabled()"
+>
+  <ng-content />
+</button>

@@ -1,0 +1,17 @@
+<div>
+  <label class="text-answer__label" [attr.for]="fieldId()">{{ label() }}</label>
+
+  <!-- No autocomplete: the browser would suggest the user's own name, and what is asked for is
+       someone else's. -->
+  <input
+    class="text-answer__input"
+    [id]="fieldId()"
+    type="text"
+    [value]="value()"
+    [attr.placeholder]="placeholder()"
+    autocomplete="off"
+    autocapitalize="words"
+    [attr.maxlength]="maxLength"
+    (input)="onInput($event)"
+  />
+</div>

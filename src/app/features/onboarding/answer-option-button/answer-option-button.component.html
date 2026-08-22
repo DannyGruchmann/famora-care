@@ -1,0 +1,22 @@
+<button
+  type="button"
+  class="answer-option"
+  [class.answer-option--selected]="selected()"
+  [class.answer-option--blocked]="disabled() && !selected()"
+  [attr.aria-pressed]="selected()"
+  [disabled]="disabled()"
+  (click)="chosen.emit(option().id)"
+>
+  <span class="answer-option__body">
+    <span class="answer-option__label">{{ option().label }}</span>
+    @if (option().hint; as hint) {
+      <span class="answer-option__hint">{{ hint }}</span>
+    }
+  </span>
+
+  <span class="answer-option__marker" aria-hidden="true">
+    @if (selected()) {
+      <svg lucideCheck class="answer-option__tick" stroke-width="3"></svg>
+    }
+  </span>
+</button>

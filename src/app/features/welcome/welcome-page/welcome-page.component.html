@@ -1,0 +1,55 @@
+@switch (store.status()) {
+  @case ('loading') {
+    <famora-loading-screen label="Einen Moment, wir holen Ihre Ordner." />
+  }
+
+  @case ('landing') {
+    <famora-landing-view />
+  }
+
+  @case ('error') {
+    <div class="welcome-page__failure">
+      <p class="welcome-page__failure-text" role="alert">{{ store.error() }}</p>
+      <div class="welcome-page__failure-action">
+        <famora-button (click)="store.retry()">Noch einmal versuchen</famora-button>
+      </div>
+    </div>
+  }
+
+  @case ('folders') {
+    <div class="welcome-page">
+      <div class="welcome-page__content">
+        <header class="welcome-page__header">
+          <p class="welcome-page__brand">Famora</p>
+          <h1 class="welcome-page__title">{{ greeting() }}</h1>
+          <p class="welcome-page__lead">Machen Sie weiter, wo Sie aufgehört haben.</p>
+        </header>
+
+        <!-- The stack is where the app grows: reminders about running deadlines, invitations to
+             the people who help, and later the memorial area all belong under the folders. -->
+        <div class="welcome-page__stack">
+          <section class="welcome-page__section">
+            <h2 class="welcome-page__section-title">Ihre Ordner</h2>
+
+            <ul class="welcome-page__folders">
+              @for (folder of store.summaries(); track folder.id) {
+                <li>
+                  <famora-folder-card [folder]="folder" />
+                </li>
+              }
+            </ul>
+
+            <a class="welcome-page__new" [routerLink]="routes.onboarding">
+              <svg lucidePlus class="welcome-page__new-icon" aria-hidden="true"></svg>
+              Neuen Ordner anlegen
+            </a>
+          </section>
+        </div>
+
+        <footer class="welcome-page__footer">
+          <famora-legal-footer />
+        </footer>
+      </div>
+    </div>
+  }
+}

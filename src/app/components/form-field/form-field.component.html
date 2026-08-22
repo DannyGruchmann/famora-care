@@ -1,0 +1,15 @@
+<div class="form-field">
+  <label class="form-field__label" [attr.for]="fieldId()">{{ label() }}</label>
+
+  @if (hint(); as hintText) {
+    <p class="form-field__hint" [id]="hintId()">{{ hintText }}</p>
+  }
+
+  <div class="form-field__control">
+    <ng-content />
+  </div>
+
+  <!-- The line is always present, even when empty: otherwise the first error pushes half the
+       form downwards while the user is looking at it. -->
+  <p class="form-field__error" [id]="errorId()">{{ error() }}</p>
+</div>

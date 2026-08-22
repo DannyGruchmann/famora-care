@@ -1,0 +1,10 @@
+<p class="documents-section__hint">{{ hint() }}</p>
+
+<ul class="documents-section__list">
+  @for (item of documents(); track item.id) {
+    <li>
+      <p class="documents-section__title">{{ item.title }}</p>
+      <p class="documents-section__detail">{{ item.detail }}</p>
+    </li>
+  }
+</ul>

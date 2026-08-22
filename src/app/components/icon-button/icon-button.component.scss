@@ -1,0 +1,35 @@
+.icon-button {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  // 2.75rem is the 44px minimum tap target.
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-full);
+  transition:
+    color 0.2s,
+    background-color 0.2s;
+
+  // The ring follows the icon colour so it stays visible on both tones.
+  &:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 2px;
+  }
+}
+
+.icon-button--light {
+  color: var(--color-ink-muted);
+
+  &:hover {
+    background-color: var(--color-surface-soft);
+  }
+}
+
+.icon-button--dark {
+  color: var(--color-on-filled);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--color-on-filled) 10%, transparent);
+  }
+}

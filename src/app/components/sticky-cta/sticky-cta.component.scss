@@ -1,0 +1,30 @@
+// contents, so the sticky element itself stays a direct child of the surrounding layout —
+// an extra block box in between would change what "sticky" sticks to.
+:host {
+  display: contents;
+}
+
+.sticky-cta {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--z-sticky);
+  border-top: 1px solid var(--color-line);
+  background-color: color-mix(in srgb, var(--color-base) 90%, transparent);
+  padding-inline: var(--space-4);
+  padding-top: var(--space-3);
+  // Keeps the button clear of the home indicator on iOS.
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+  backdrop-filter: blur(4px);
+}
+
+.sticky-cta__inner {
+  max-width: 28rem;
+  margin-inline: auto;
+}
+
+.sticky-cta__note {
+  margin-top: var(--space-2);
+  font-size: 0.75rem;
+  text-align: center;
+  color: var(--color-ink-soft);
+}

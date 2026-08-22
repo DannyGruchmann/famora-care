@@ -1,0 +1,10 @@
+@if (error(); as message) {
+  <div class="folder-redirect">
+    <p class="folder-redirect__message" role="alert">{{ message }}</p>
+    <div class="folder-redirect__action">
+      <famora-button (click)="retry()">Noch einmal versuchen</famora-button>
+    </div>
+  </div>
+} @else {
+  <famora-loading-screen label="Einen Moment, wir holen Ihre Ordner." />
+}

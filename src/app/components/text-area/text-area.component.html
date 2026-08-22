@@ -1,0 +1,16 @@
+<famora-form-field [fieldId]="fieldId()" [label]="label()" [hint]="hint()" [error]="error()">
+  <textarea
+    class="text-area__input"
+    [class.text-area__input--invalid]="error() !== undefined"
+    [id]="fieldId()"
+    [value]="value()"
+    [disabled]="isDisabled()"
+    [rows]="rows()"
+    [attr.placeholder]="placeholder()"
+    [attr.maxlength]="maxlength()"
+    [attr.aria-describedby]="describedBy()"
+    [attr.aria-invalid]="error() !== undefined ? 'true' : null"
+    (input)="onInput($event)"
+    (blur)="onBlur()"
+  ></textarea>
+</famora-form-field>

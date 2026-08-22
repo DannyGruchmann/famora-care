@@ -1,0 +1,63 @@
+.legal-page-layout {
+  min-height: 100dvh;
+}
+
+.legal-page-layout__header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background-color: color-mix(in srgb, var(--color-base) 90%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.legal-page-layout__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: 42rem;
+  margin-inline: auto;
+  padding: var(--space-3);
+}
+
+.legal-page-layout__back-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.legal-page-layout__eyebrow {
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+}
+
+.legal-page-layout__rule {
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-line);
+}
+
+.legal-page-layout__main {
+  width: 100%;
+  max-width: 42rem;
+  margin-inline: auto;
+  padding: var(--space-10) var(--space-5) var(--space-16);
+}
+
+.legal-page-layout__heading {
+  font-size: 2rem;
+  line-height: 1.25;
+  color: var(--color-ink);
+}
+
+.legal-page-layout__intro {
+  margin-top: var(--space-4);
+  line-height: 1.625;
+  color: var(--color-ink-muted);
+}
+
+.legal-page-layout__updated {
+  margin-top: var(--space-12);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-line);
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+}

@@ -1,0 +1,152 @@
+<famora-legal-page-layout
+  heading="Datenschutz"
+  intro="Famora ist für einen Moment gemacht, in dem man niemandem etwas erklären möchte. Hier steht, welche Daten dabei anfallen, wo sie liegen und wie Sie sie wieder loswerden."
+>
+  <famora-legal-section heading="Verantwortlicher">
+    <p>Verantwortlich für die Datenverarbeitung im Sinne der Datenschutz-Grundverordnung ist:</p>
+    <p>
+      {{ provider.name }}<br />
+      {{ provider.business }}<br />
+      {{ provider.street }}<br />
+      {{ provider.postalCode }} {{ provider.city }}<br />
+      E-Mail: {{ provider.email }}
+    </p>
+    <p>Ein Datenschutzbeauftragter ist gesetzlich nicht zu benennen (§ 38 Abs. 1 BDSG).</p>
+  </famora-legal-section>
+
+  <famora-legal-section heading="Nutzerkonto">
+    <p>
+      Für Famora legen Sie ein Konto an. Dafür verarbeiten wir Ihren Vornamen, Ihre E-Mail-Adresse
+      und Ihr Passwort. Das Passwort wird ausschließlich als kryptografischer Hash gespeichert; im
+      Klartext ist es uns nicht bekannt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, weil das
+      Konto zur Bereitstellung der Anwendung erforderlich ist.
+    </p>
+    <p>Die Willkommensseite, das Impressum und diese Erklärung können Sie ohne Konto ansehen.</p>
+  </famora-legal-section>
+
+  <famora-legal-section heading="Ihre Ordner">
+    <p>
+      Was Sie in einem Ordner eintragen, speichern wir Ihrem Konto zugeordnet: Ihre Antworten aus
+      dem Onboarding, die abgehakten Aufgaben, die Namen der Personen, die Sie als Unterstützung
+      eintragen, und die Zuordnung von Aufgaben zu diesen Personen. Nur so finden Sie Ihre Liste auf
+      einem anderen Gerät und nach dem Abmelden wieder.
+    </p>
+    <p>
+      Das betrifft ausdrücklich auch die besonders sensiblen Angaben: Vorname der verstorbenen
+      Person, Todestag, Bundesland, Verwandtschaftsverhältnis und Angaben zum Nachlass.
+      Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
+    </p>
+    <p>
+      Technisch stellt eine Zugriffskontrolle auf Datenbankebene (Row Level Security) sicher, dass
+      ein Ordner ausschließlich über das Konto abrufbar ist, zu dem er gehört.
+    </p>
+    <p>
+      Jeden Ordner können Sie in der Anwendung selbst löschen – über den Knopf „Löschen“ am Ende der
+      Übersicht. Die Löschung wirkt sofort und umfasst alle Angaben dieses Ordners. Möchten Sie Ihr
+      gesamtes Konto samt aller Ordner löschen lassen, genügt eine formlose Nachricht an
+      {{ provider.email }}.
+    </p>
+  </famora-legal-section>
+
+  <famora-legal-section heading="Auftragsverarbeiter für Konto und Ordner">
+    <p>
+      Konto und Ordner betreiben wir mit Supabase, betrieben von Supabase, Inc., 970 Toa Payoh
+      North, Singapur. Die Daten liegen in einem Rechenzentrum in der Europäischen Union. Mit
+      Supabase besteht ein Vertrag zur Auftragsverarbeitung nach Art. 28 DSGVO. Soweit im Rahmen von
+      Wartung und Support ein Zugriff aus einem Drittland nicht ausgeschlossen werden kann, stützen
+      wir diese Übermittlung auf die Standardvertragsklauseln der Europäischen Kommission.
+    </p>
+  </famora-legal-section>
+
+  <famora-legal-section heading="Speicherung im Browser">
+    <p>
+      Damit Sie angemeldet bleiben, legt die Anwendung Ihre Sitzung im lokalen Speicher Ihres
+      Browsers (localStorage) ab, nicht in Cookies. Das ist für den Betrieb unbedingt erforderlich –
+      dafür braucht es nach § 25 Abs. 2 Nr. 2 TDDDG keine Einwilligung. Beim Abmelden wird die
+      Sitzung entfernt.
+    </p>
+    <p>
+      Bitte beachten Sie: Wer Zugriff auf Ihr Gerät und Ihren angemeldeten Browser hat, kann Ihre
+      Ordner sehen. Auf einem gemeinsam genutzten Gerät sollten Sie sich abmelden.
+    </p>
+  </famora-legal-section>
+
+  <famora-legal-section heading="Aufruf der Anwendung und Server-Logdateien">
+    <p>
+      Beim Aufruf der Anwendung überträgt Ihr Browser technisch notwendige Daten an unseren Hoster,
+      der sie in Logdateien speichert: IP-Adresse, Datum und Uhrzeit des Zugriffs, aufgerufene
+      Datei, übertragene Datenmenge, Browsertyp und Betriebssystem sowie die zuvor besuchte Seite.
+    </p>
+    <p>
+      Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Unser berechtigtes Interesse liegt im stabilen
+      und sicheren Betrieb der Anwendung sowie in der Abwehr von Angriffen. Eine Zusammenführung
+      dieser Daten mit Ihren Eingaben in der Anwendung findet nicht statt und wäre technisch auch
+      nicht möglich.
+    </p>
+    <p>
+      Gehostet wird die Anwendung bei der Hetzner Online GmbH, Industriestr. 25, 91710 Gunzenhausen,
+      Deutschland. Die Server stehen in der Europäischen Union. Mit Hetzner besteht ein Vertrag zur
+      Auftragsverarbeitung nach Art. 28 DSGVO.
+    </p>
+    <p>
+      Dem Hoster vorgeschaltet ist Cloudflare, Inc., 101 Townsend St., San Francisco, CA 94107, USA.
+      Cloudflare speichert die Anwendung nicht, sondern leitet den Aufruf weiter und übernimmt dabei
+      die Verschlüsselung der Verbindung sowie die Abwehr von Angriffen. Dabei werden die oben
+      genannten Verbindungsdaten verarbeitet. Mit Cloudflare besteht ein Vertrag zur
+      Auftragsverarbeitung nach Art. 28 DSGVO. Eine Übermittlung in die USA wird auf die
+      Standardvertragsklauseln der Europäischen Kommission und die Zertifizierung nach dem EU-US
+      Data Privacy Framework gestützt.
+    </p>
+  </famora-legal-section>
+
+  <famora-legal-section heading="Keine Cookies, keine Analyse, keine Werbung">
+    <p>
+      Wir setzen keine Tracking-Cookies, keine Analyse- oder Statistikdienste, keine Werbenetzwerke
+      und keine Social-Media-Plugins ein. Es findet kein Profiling und keine automatisierte
+      Entscheidungsfindung statt. Ihre Daten werden nicht verkauft und nicht weitergegeben.
+    </p>
+  </famora-legal-section>
+
+  <famora-legal-section heading="Kontaktaufnahme">
+    <p>
+      Wenn Sie uns per E-Mail schreiben, verarbeiten wir Ihre Angaben zur Bearbeitung Ihrer Anfrage.
+      Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO, bei Anfragen zu einem Vertrag zusätzlich Art.
+      6 Abs. 1 lit. b DSGVO. Wir löschen diese Daten, sobald die Anfrage erledigt ist und keine
+      gesetzlichen Aufbewahrungspflichten entgegenstehen.
+    </p>
+  </famora-legal-section>
+
+  <famora-legal-section heading="Ihre Rechte">
+    <p>
+      Ihnen stehen gegenüber dem Verantwortlichen die folgenden Rechte zu: Auskunft (Art. 15 DSGVO),
+      Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18),
+      Datenübertragbarkeit (Art. 20) und Widerspruch gegen Verarbeitungen auf Grundlage eines
+      berechtigten Interesses (Art. 21).
+    </p>
+    <p>
+      Für eine Auskunft, eine Berichtigung oder die Löschung Ihres Kontos genügt eine formlose
+      Nachricht an {{ provider.email }}. Einzelne Ordner können Sie jederzeit selbst in der
+      Anwendung löschen.
+    </p>
+  </famora-legal-section>
+
+  <famora-legal-section heading="Beschwerderecht">
+    <p>
+      Sie können sich jederzeit bei einer Datenschutz-Aufsichtsbehörde beschweren (Art. 77 DSGVO).
+      Für uns zuständig ist:
+    </p>
+    <p>
+      {{ authority.name }}<br />
+      {{ authority.street }}<br />
+      {{ authority.city }}<br />
+      {{ authority.website }}
+    </p>
+  </famora-legal-section>
+
+  <famora-legal-section heading="Änderungen dieser Erklärung">
+    <p>
+      Wir passen diese Erklärung an, sobald sich die Anwendung ändert – etwa wenn ein weiterer
+      Dienstleister hinzukommt. Den jeweiligen Stand finden Sie am Ende dieser Seite.
+    </p>
+  </famora-legal-section>
+</famora-legal-page-layout>

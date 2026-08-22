@@ -1,0 +1,41 @@
+@if (dateQuestion(); as question) {
+  <famora-date-answer-input
+    [fieldId]="question.id"
+    [label]="question.label"
+    [value]="singleValue()"
+    (changed)="valueChanged.emit($event)"
+  />
+}
+
+@if (textQuestion(); as question) {
+  <famora-text-answer-input
+    [fieldId]="question.id"
+    [label]="question.label"
+    [placeholder]="question.placeholder"
+    [value]="singleValue()"
+    (changed)="valueChanged.emit($event)"
+  />
+}
+
+@if (selectQuestion(); as question) {
+  <famora-select-answer-input
+    [fieldId]="question.id"
+    [label]="question.label"
+    [options]="question.options"
+    [value]="singleValue()"
+    (changed)="valueChanged.emit($event)"
+  />
+}
+
+@if (choiceQuestion(); as question) {
+  <div class="question-body__options">
+    @for (option of question.options; track option.id) {
+      <famora-answer-option-button
+        [option]="option"
+        [selected]="isSelected(option.id)"
+        [disabled]="isBlocked(option.id)"
+        (chosen)="optionChosen.emit($event)"
+      />
+    }
+  </div>
+}

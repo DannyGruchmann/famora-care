@@ -1,0 +1,83 @@
+@if (isSignedIn()) {
+  <div class="user-menu">
+    <div class="user-menu__bar">
+      <div class="user-menu__anchor">
+        <button
+          type="button"
+          class="user-menu__trigger"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="isOpen()"
+          [attr.aria-label]="accountLabel()"
+          (click)="toggle()"
+        >
+          @if (initial() === '') {
+            <svg lucideUser class="user-menu__trigger-icon" aria-hidden="true"></svg>
+          } @else {
+            {{ initial() }}
+          }
+        </button>
+
+        @if (isOpen()) {
+          <div class="user-menu__panel" role="menu">
+            <div class="user-menu__identity">
+              @if (firstName() !== '') {
+                <p class="user-menu__name">{{ firstName() }}</p>
+              }
+              <p class="user-menu__email">{{ email() }}</p>
+            </div>
+
+            <!-- More than a handful of folders will not fit on a phone screen, so the list
+                 scrolls within itself from there on. -->
+            <div class="user-menu__folders">
+              @if (folders().length === 0) {
+                <p class="user-menu__hint">
+                  @if (isLoadingFolders()) {
+                    Ordner werden geladen …
+                  } @else if (foldersFailed()) {
+                    Ihre Ordner sind gerade nicht erreichbar.
+                  } @else {
+                    Noch kein Ordner angelegt.
+                  }
+                </p>
+              }
+
+              @for (folder of folders(); track folder.id) {
+                <a
+                  class="user-menu__item"
+                  [class.user-menu__item--current]="isCurrentFolder(folder)"
+                  [routerLink]="folderPath(folder.id)"
+                  role="menuitem"
+                  [attr.aria-current]="isCurrentFolder(folder) ? 'page' : null"
+                  (click)="close()"
+                >
+                  <svg
+                    lucideFolderOpen
+                    class="user-menu__item-icon"
+                    [class.user-menu__item-icon--prepare]="isPrepareFolder(folder)"
+                    aria-hidden="true"
+                  ></svg>
+                  <span class="user-menu__item-label">{{ folderLabel(folder.answers) }}</span>
+                </a>
+              }
+            </div>
+
+            <a
+              class="user-menu__item user-menu__item--bordered"
+              [routerLink]="routes.onboarding"
+              role="menuitem"
+              (click)="close()"
+            >
+              <svg lucidePlus class="user-menu__item-icon" aria-hidden="true"></svg>
+              Neuen Ordner anlegen
+            </a>
+
+            <button type="button" class="user-menu__item" role="menuitem" (click)="signOut()">
+              <svg lucideLogOut class="user-menu__item-icon" aria-hidden="true"></svg>
+              Abmelden
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
