@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A new push makes the previous run pointless — cancel it instead of paying for both.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Same version the Dockerfile builds with, so CI cannot pass on a runtime
+          # the deploy never sees.
+          node-version: '20.19'
+          cache: npm
+
+      # npm install rather than npm ci — see the Dockerfile for why the lockfile
+      # cannot be installed cleanly on linux.
+      - run: npm install --no-audit --no-fund
+
+      - run: npm run format:check
+
+      - run: npm run lint
+
+      - run: npm test -- --no-watch
+
+      # No Supabase credentials here on purpose: this only has to compile. The keys
+      # belong in Coolify, never in a workflow.
+      - run: npm run build

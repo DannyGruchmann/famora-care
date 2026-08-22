@@ -1,0 +1,8 @@
+# Build output and caches — Prettier has nothing to say about generated files.
+/dist
+/.angular
+/node_modules
+/package-lock.json
+
+# Written by scripts/generate-environment.mjs on every build.
+/src/environments/environment.ts
