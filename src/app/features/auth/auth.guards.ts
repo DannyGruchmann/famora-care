@@ -46,5 +46,9 @@ export const guestOnlyGuard: CanActivateFn = async (route) => {
   await auth.waitUntilSessionKnown();
   if (auth.status() === 'signed-out') return true;
 
+  // A reset link signs its owner in before they set anything — sending them on to the dashboard
+  // would skip exactly the form they clicked the link for.
+  if (auth.isRecoveringPassword()) return router.parseUrl(ROUTES.resetPassword);
+
   return router.parseUrl(redirectTo);
 };

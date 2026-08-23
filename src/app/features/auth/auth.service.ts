@@ -1,5 +1,5 @@
 import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
-import type { User } from '@supabase/supabase-js';
+import type { AuthChangeEvent, User } from '@supabase/supabase-js';
 import { SupabaseService, type FamoraSupabaseClient } from '@/app/lib/supabase.service';
 import type { AuthState } from './auth.types';
 
@@ -8,6 +8,17 @@ const SIGNED_OUT: AuthState = { status: 'signed-out', user: null };
 
 function toState(user: User | null): AuthState {
   return user === null ? SIGNED_OUT : { status: 'signed-in', user };
+}
+
+/** What GoTrue appends to the address of a password-reset link. */
+const RECOVERY_MARKER = 'type=recovery';
+
+/**
+ * Read before the Supabase client has cleaned the address up. The PASSWORD_RECOVERY event says
+ * the same thing, but arrives a tick later — the guards decide earlier than that.
+ */
+function arrivedFromRecoveryLink(): boolean {
+  return window.location.hash.includes(RECOVERY_MARKER);
 }
 
 /** The first name from registration. Empty while nobody is signed in. */
@@ -23,9 +34,13 @@ export class AuthService {
   private readonly destroyRef = inject(DestroyRef);
   private readonly state = signal<AuthState>(LOADING);
 
+  private readonly recovering = signal(arrivedFromRecoveryLink());
+
   readonly status = computed(() => this.state().status);
   readonly user = computed(() => this.state().user);
   readonly firstName = computed(() => firstNameOf(this.state().user));
+  /** True while the session comes from a reset link and no new password has been saved yet. */
+  readonly isRecoveringPassword = this.recovering.asReadonly();
 
   private markSessionKnown: () => void = () => undefined;
 
@@ -60,11 +75,21 @@ export class AuthService {
   }
 
   private subscribeToAuthChanges(client: FamoraSupabaseClient): void {
-    const { data } = client.auth.onAuthStateChange((_event, session) => {
+    const { data } = client.auth.onAuthStateChange((event, session) => {
+      this.trackRecovery(event);
       this.setState(toState(session?.user ?? null));
     });
 
     this.destroyRef.onDestroy(() => data.subscription.unsubscribe());
+  }
+
+  /**
+   * A session from a reset link is signed in like any other — only the event tells them apart.
+   * USER_UPDATED arrives once the new password is saved, which is what ends the recovery.
+   */
+  private trackRecovery(event: AuthChangeEvent): void {
+    if (event === 'PASSWORD_RECOVERY') this.recovering.set(true);
+    if (event === 'USER_UPDATED' || event === 'SIGNED_OUT') this.recovering.set(false);
   }
 
   /**

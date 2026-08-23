@@ -32,8 +32,8 @@ function createClientMock(getSession: () => Promise<SessionResult>) {
     },
   } as unknown as FamoraSupabaseClient;
 
-  const report = (session: Session | null) => {
-    for (const listener of listeners) listener('SIGNED_IN', session);
+  const report = (session: Session | null, event = 'SIGNED_IN') => {
+    for (const listener of listeners) listener(event, session);
   };
 
   return { client, report, unsubscribe };
@@ -111,6 +111,29 @@ describe('AuthService', () => {
 
     expect(service.status()).toBe('signed-out');
     await expect(service.waitUntilSessionKnown()).resolves.toBeUndefined();
+  });
+
+  it('marks a session that arrived through a password-reset link', async () => {
+    const { client, report } = createClientMock(() => Promise.resolve({ data: { session: null } }));
+
+    const service = serviceWithClient(client);
+    await service.waitUntilSessionKnown();
+    report(sessionFor(userNamed('from-reset-link')), 'PASSWORD_RECOVERY');
+
+    expect(service.status()).toBe('signed-in');
+    expect(service.isRecoveringPassword()).toBe(true);
+  });
+
+  it('ends the recovery once the new password is saved', async () => {
+    const { client, report } = createClientMock(() => Promise.resolve({ data: { session: null } }));
+    const session = sessionFor(userNamed('from-reset-link'));
+
+    const service = serviceWithClient(client);
+    await service.waitUntilSessionKnown();
+    report(session, 'PASSWORD_RECOVERY');
+    report(session, 'USER_UPDATED');
+
+    expect(service.isRecoveringPassword()).toBe(false);
   });
 
   it('unsubscribes from auth changes when the injector is destroyed', () => {
