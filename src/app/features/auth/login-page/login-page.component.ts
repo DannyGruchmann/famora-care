@@ -1,9 +1,17 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LucideCompass } from '@lucide/angular';
 import { Button } from '@/app/components/button/button.component';
+import { environment } from '@/environments/environment';
 import { REDIRECT_PARAM, ROUTES } from '@/app/routes.constants';
 import { AuthLayout } from '../auth-layout/auth-layout.component';
 import { AuthSwitchLink } from '../auth-switch-link/auth-switch-link.component';
@@ -17,6 +25,7 @@ import {
 } from '../auth.validators';
 import { PasswordField } from '../password-field/password-field.component';
 import { TextField } from '@/app/components/text-field/text-field.component';
+import { TurnstileWidget } from '../turnstile-widget/turnstile-widget.component';
 
 const FIELD_IDS = {
   email: 'login-email',
@@ -34,6 +43,7 @@ const FIELD_IDS = {
     Button,
     PasswordField,
     TextField,
+    TurnstileWidget,
   ],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss',
@@ -47,6 +57,11 @@ export class LoginPage {
 
   protected readonly fieldIds = FIELD_IDS;
   protected readonly routes = ROUTES;
+  /** Empty means: no Turnstile widget configured — the form then submits without a token. */
+  protected readonly turnstileSiteKey = environment.turnstileSiteKey;
+
+  private readonly turnstile = viewChild(TurnstileWidget);
+  protected readonly captchaToken = signal('');
 
   protected readonly form = this.formBuilder.nonNullable.group({
     email: [loadAuthDraft().email, emailValidator],
@@ -74,6 +89,12 @@ export class LoginPage {
     return errorMessageOf(this.form.controls.password, this.wasSubmitted());
   });
 
+  /** Blocks submit until the widget has a token — a configured Turnstile is not optional to solve. */
+  protected readonly canSubmit = computed(
+    () =>
+      !this.isSubmitting() && (this.turnstileSiteKey.length === 0 || this.captchaToken() !== ''),
+  );
+
   constructor() {
     // So that a look at the imprint does not cost the input.
     this.form.controls.email.valueChanges.subscribe((email) => {
@@ -85,7 +106,8 @@ export class LoginPage {
     this.wasSubmitted.set(true);
     this.serverError.set(undefined);
 
-    if (this.form.invalid) {
+    // The button already disables itself while unsolved — this catches Enter, which ignores that.
+    if (this.form.invalid || !this.canSubmit()) {
       focusFirstInvalidField([
         [FIELD_IDS.email, this.form.controls.email.invalid],
         [FIELD_IDS.password, this.form.controls.password.invalid],
@@ -104,10 +126,14 @@ export class LoginPage {
     const { email, password } = this.form.getRawValue();
 
     this.isSubmitting.set(true);
-    const result = await this.authQueries.signIn(email, password);
+    const result = await this.authQueries.signIn(email, password, this.captchaToken() || undefined);
     this.isSubmitting.set(false);
 
     if (!result.ok) {
+      // A Turnstile token is good for one request. After a wrong password the next attempt would
+      // fail on the spent token instead of the password, so the widget starts over.
+      this.turnstile()?.reset();
+      this.captchaToken.set('');
       this.serverError.set(result.message);
       return;
     }

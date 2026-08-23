@@ -11,20 +11,30 @@ npm install
 
 Create `.env.local` in the project root and fill in the values below.
 
-| Variable             | Where it comes from                                                   |
-| -------------------- | --------------------------------------------------------------------- |
-| `SUPABASE_URL`       | Supabase dashboard -> Project Settings -> API -> Project URL          |
-| `SUPABASE_ANON_KEY`  | Same page -- the **anon / publishable** key                           |
-| `TURNSTILE_SITE_KEY` | Cloudflare dashboard -> Turnstile -> the widget's Site Key. Optional. |
+| Variable             | Where it comes from                                          |
+| -------------------- | ------------------------------------------------------------ |
+| `SUPABASE_URL`       | Supabase dashboard -> Project Settings -> API -> Project URL |
+| `SUPABASE_ANON_KEY`  | Same page -- the **anon / publishable** key                  |
+| `TURNSTILE_SITE_KEY` | Cloudflare dashboard -> Turnstile -> the widget's Site Key   |
 
 `SUPABASE_ANON_KEY` must never hold the `service_role` key. It bypasses Row Level Security and
 is compiled into the public browser bundle, so the build aborts on it -- see
 `scripts/generate-environment.mjs`.
 
-`TURNSTILE_SITE_KEY` is public by design too, same as the anon key. Leaving it empty builds fine
--- the register and forgot-password forms simply skip the CAPTCHA. The matching Secret Key is
-never in this repo; it belongs in the Supabase dashboard under Authentication -> Protection ->
-CAPTCHA protection.
+`TURNSTILE_SITE_KEY` is public by design too, same as the anon key. The matching Secret Key is
+never in this repo; it belongs in the Supabase dashboard under Authentication -> Attack Protection
+-> Enable CAPTCHA protection.
+
+That switch is not per form: with it on, Supabase rejects sign-in, registration and password-reset
+requests alike unless they carry a token, so all three forms render the widget. A build without
+`TURNSTILE_SITE_KEY` then cannot sign anyone in -- the server answers `400 captcha_failed`. Either
+supply the key or leave CAPTCHA protection off in the project; a half-configured pair locks the app
+out of its own backend.
+
+For local development the widget's Site Key only works once `localhost` is listed under Hostname
+Management for that widget in the Cloudflare dashboard. Cloudflare's dummy keys are no help here:
+Supabase verifies against the one Secret Key stored in the project, and the dummy pair does not
+match it.
 
 The generator runs once when the dev server starts, not on every request. After changing
 `.env.local`, restart `npm start` -- otherwise the bundle keeps serving the values it was built

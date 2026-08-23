@@ -38,6 +38,11 @@ const ERROR_MESSAGES: Record<string, string | undefined> = {
   // One single answer for "account does not exist" and "wrong password". Two different messages
   // would reveal which addresses have an account.
   invalid_credentials: 'E-Mail-Adresse oder Passwort stimmt nicht.',
+  // Named despite the enumeration rule above: Supabase already answers this address differently
+  // than an unknown one, so the wording reveals nothing the API does not. Staying vague here
+  // would leave someone with a correct password locked out with no idea what to do.
+  email_not_confirmed:
+    'Bitte bestätigen Sie zuerst den Link in Ihrer Bestätigungs-Mail. Danach können Sie sich anmelden.',
   same_password: 'Das ist Ihr bisheriges Passwort. Bitte wählen Sie ein anderes.',
 };
 
@@ -93,12 +98,22 @@ export class AuthQueries {
     }
   }
 
-  async signIn(email: string, password: string): Promise<AuthResult> {
+  /**
+   * With CAPTCHA protection switched on in the Supabase project, this endpoint needs a token just
+   * like signUp does — the setting covers sign-in, sign-up and password reset alike. Without one
+   * the server answers 400 captcha_failed, no matter how right the password is.
+   */
+  async signIn(email: string, password: string, captchaToken?: string): Promise<AuthResult> {
     const client = this.supabase.client;
     if (client === null) return NOT_CONFIGURED;
 
     try {
-      const { error } = await client.auth.signInWithPassword({ email: email.trim(), password });
+      const { error } = await client.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+        options: { captchaToken },
+      });
+
       return toResult(error);
     } catch {
       return NOT_CONFIGURED;
