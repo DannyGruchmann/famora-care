@@ -44,18 +44,14 @@
               @for (folder of folders(); track folder.id) {
                 <a
                   class="user-menu__item"
+                  [class.user-menu__item--prepare]="isPreparing(folder.answers)"
                   [class.user-menu__item--current]="isCurrentFolder(folder)"
                   [routerLink]="folderPath(folder.id)"
                   role="menuitem"
                   [attr.aria-current]="isCurrentFolder(folder) ? 'page' : null"
                   (click)="close()"
                 >
-                  <svg
-                    lucideFolderOpen
-                    class="user-menu__item-icon"
-                    [class.user-menu__item-icon--prepare]="isPrepareFolder(folder)"
-                    aria-hidden="true"
-                  ></svg>
+                  <svg lucideFolderOpen class="user-menu__item-icon" aria-hidden="true"></svg>
                   <span class="user-menu__item-label">{{ folderLabel(folder.answers) }}</span>
                 </a>
               }

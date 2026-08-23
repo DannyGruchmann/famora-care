@@ -107,7 +107,11 @@ function isAfterDeath(answers: OnboardingAnswers): boolean {
   return getMode(answers) === MODE_AFTER_DEATH;
 }
 
-function isPreparing(answers: OnboardingAnswers): boolean {
+/**
+ * Exported because the folder's path decides more than which questions follow: the register, the
+ * emergency sheet and the colour the dashboard is painted in all hang off it.
+ */
+export function isPreparing(answers: OnboardingAnswers): boolean {
   return getMode(answers) === MODE_PREPARE;
 }
 

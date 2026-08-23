@@ -4,7 +4,7 @@
   [routerLink]="path()"
   [attr.aria-label]="folder().label + ', ' + progressLabel()"
 >
-  <span class="folder-card__icon" [class.folder-card__icon--prepare]="isPreparing()">
+  <span class="folder-card__icon">
     @if (isPreparing()) {
       <svg lucideShieldCheck stroke-width="1.75" aria-hidden="true"></svg>
     } @else {

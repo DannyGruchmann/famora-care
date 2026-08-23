@@ -20,11 +20,10 @@
 }
 
 .folder-card--prepare {
-  --progress-ring-value: var(--color-prepare);
-  --progress-ring-track: var(--color-prepare-soft);
+  @include prepare-palette;
 
   &:hover {
-    border-color: color-mix(in srgb, var(--color-prepare) 45%, transparent);
+    border-color: color-mix(in srgb, var(--color-primary) 45%, transparent);
   }
 }
 
@@ -43,11 +42,6 @@
     width: 1.25rem;
     height: 1.25rem;
   }
-}
-
-.folder-card__icon--prepare {
-  background-color: var(--color-prepare-soft);
-  color: var(--color-prepare);
 }
 
 .folder-card__body {

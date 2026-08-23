@@ -5,7 +5,7 @@ import type { EntryKind } from '@/app/features/entries/entry.types';
 import { FoldersQueries } from '@/app/features/folders/folders.queries';
 import type { Folder } from '@/app/features/folders/folder.types';
 import { GENERIC_ERROR } from '@/app/lib/supabase-query';
-import { MODE_PREPARE, getMode } from '@/app/features/onboarding/onboarding.questions';
+import { isPreparing } from '@/app/features/onboarding/onboarding.questions';
 import { toFolderSummaries, type FolderSummary } from './welcome.summary';
 
 /**
@@ -13,10 +13,6 @@ import { toFolderSummaries, type FolderSummary } from './welcome.summary';
  * folders: show the overview instead.
  */
 export type WelcomeStatus = 'loading' | 'landing' | 'folders' | 'error';
-
-function isPrepareFolder(folder: Folder): boolean {
-  return getMode(folder.answers) === MODE_PREPARE;
-}
 
 /**
  * Decides which of the two welcomes someone gets. Provided by the page rather than in root, so a
@@ -112,7 +108,7 @@ export class WelcomeStore {
    * then be short by the tasks the register ticks off.
    */
   private async loadFilledKinds(folders: Folder[]): Promise<ReadonlyMap<string, EntryKind[]>> {
-    if (!folders.some(isPrepareFolder)) return new Map();
+    if (!folders.some((folder) => isPreparing(folder.answers))) return new Map();
 
     const result = await this.entriesQueries.listFilledKinds();
 

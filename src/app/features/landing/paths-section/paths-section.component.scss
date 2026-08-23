@@ -50,14 +50,13 @@
   }
 }
 
-.paths-section__option--prepare:hover {
-  border-color: color-mix(in srgb, var(--color-prepare) 45%, transparent);
-}
-
 // The precaution path carries its own colour, so the two options do not read as one offer.
-.paths-section__icon--prepare {
-  background-color: var(--color-prepare-soft);
-  color: var(--color-prepare);
+.paths-section__option--prepare {
+  @include prepare-palette;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 45%, transparent);
+  }
 }
 
 .paths-section__body {

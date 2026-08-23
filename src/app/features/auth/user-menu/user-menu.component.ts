@@ -12,7 +12,7 @@ import { LucideFolderOpen, LucideLogOut, LucidePlus, LucideUser } from '@lucide/
 import { folderLabel } from '@/app/features/folders/folder.label';
 import { FoldersQueries } from '@/app/features/folders/folders.queries';
 import type { Folder } from '@/app/features/folders/folder.types';
-import { getMode, MODE_PREPARE } from '@/app/features/onboarding/onboarding.questions';
+import { isPreparing } from '@/app/features/onboarding/onboarding.questions';
 import { folderPath, ROUTES } from '@/app/routes.constants';
 import { AuthQueries } from '../auth.queries';
 import { AuthService } from '../auth.service';
@@ -38,6 +38,7 @@ export class UserMenu {
   protected readonly routes = ROUTES;
   protected readonly folderPath = folderPath;
   protected readonly folderLabel = folderLabel;
+  protected readonly isPreparing = isPreparing;
 
   protected readonly isOpen = signal(false);
   protected readonly folders = signal<Folder[]>([]);
@@ -78,11 +79,6 @@ export class UserMenu {
 
   protected close(): void {
     this.isOpen.set(false);
-  }
-
-  /** Same colour the folder carries on the overview, so the menu names the same thing. */
-  protected isPrepareFolder(folder: Folder): boolean {
-    return getMode(folder.answers) === MODE_PREPARE;
   }
 
   protected isCurrentFolder(folder: Folder): boolean {

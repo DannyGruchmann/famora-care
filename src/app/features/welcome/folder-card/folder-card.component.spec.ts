@@ -52,16 +52,16 @@ describe('FolderCard', () => {
 
   it('gives the precaution folder its own colour', () => {
     const fixture = renderCard(summaryWith());
-    const icon = fixture.nativeElement.querySelector('.folder-card__icon');
+    const card = fixture.nativeElement.querySelector('.folder-card');
 
-    expect(icon.classList.contains('folder-card__icon--prepare')).toBe(true);
+    expect(card.classList.contains('folder-card--prepare')).toBe(true);
   });
 
   it('leaves the after-death folder in the brand colour', () => {
     const fixture = renderCard(summaryWith({ mode: MODE_AFTER_DEATH, label: 'Ihr Ordner' }));
-    const icon = fixture.nativeElement.querySelector('.folder-card__icon');
+    const card = fixture.nativeElement.querySelector('.folder-card');
 
-    expect(icon.classList.contains('folder-card__icon--prepare')).toBe(false);
+    expect(card.classList.contains('folder-card--prepare')).toBe(false);
   });
 
   it('names the path and how far it has come', () => {

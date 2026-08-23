@@ -11,10 +11,7 @@
         [routerLink]="target()"
         [queryParams]="option.queryParams"
       >
-        <span
-          class="paths-section__icon"
-          [class.paths-section__icon--prepare]="option.id !== afterDeath"
-        >
+        <span class="paths-section__icon">
           @if (option.id === afterDeath) {
             <svg lucideHeartHandshake stroke-width="1.75" aria-hidden="true"></svg>
           } @else {

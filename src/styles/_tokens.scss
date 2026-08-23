@@ -4,7 +4,11 @@
 
 :root {
   // Colours, ported 1:1 from the @theme block of the React app.
-  --color-primary: #2d4e43;
+  // The app's own colour. --color-primary below starts out as the same green but gets swapped per
+  // folder; this one never moves, so anything that belongs to famora rather than to the folder in
+  // front of you can hold on to it.
+  --color-brand: #2d4e43;
+  --color-primary: var(--color-brand);
   --color-primary-hover: #3d6b5c;
   --color-primary-soft: #e8f0ec;
   --color-base: #fafaf7;
@@ -22,6 +26,9 @@
   // Held at the restraint of the primary green rather than a bright yellow — the two paths are a
   // pair, and a signal colour next to the brand would read as a warning.
   --color-prepare: #7d6636;
+  // Darker on hover, not lighter like the green: the ochre already sits mid-scale, and lightening
+  // it would drop white button text below the contrast the green holds at 6:1.
+  --color-prepare-hover: #6b562d;
   --color-prepare-soft: #f3ecdc;
   --color-success: #5b8a72;
   --color-danger: #a34a40;

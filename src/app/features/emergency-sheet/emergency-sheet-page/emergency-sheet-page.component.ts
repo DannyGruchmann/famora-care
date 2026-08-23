@@ -8,6 +8,7 @@ import { LoadingScreen } from '@/app/components/loading-screen/loading-screen.co
 import { DashboardStore } from '@/app/features/dashboard/dashboard.store';
 import { EntriesStore } from '@/app/features/entries/entries.store';
 import { folderLabel } from '@/app/features/folders/folder.label';
+import { isPreparing } from '@/app/features/onboarding/onboarding.questions';
 import { FOLDER_ID_PARAM, folderPath, ROUTES } from '@/app/routes.constants';
 import { formatLongDate } from '@/app/shared/date.utils';
 import { toSheetSections } from '../emergency-sheet.sections';
@@ -34,6 +35,9 @@ const SAFEKEEPING =
   // The same two stores the dashboard uses: this is a second view of one folder, and loading it
   // a second way would be a second place for the loading to go wrong.
   providers: [DashboardStore, EntriesStore],
+  // The sheet is the precaution folder's document and wears its colour. Bound rather than fixed,
+  // because the address takes any folder id — an after-death folder lands on the blank state.
+  host: { '[class.emergency-sheet--prepare]': 'isPrecautionFolder()' },
 })
 export class EmergencySheetPage {
   private readonly route = inject(ActivatedRoute);
@@ -54,6 +58,8 @@ export class EmergencySheetPage {
   );
 
   protected readonly heading = computed(() => folderLabel(this.folder.answers()));
+
+  protected readonly isPrecautionFolder = computed(() => isPreparing(this.folder.answers()));
 
   protected readonly isLoading = computed(
     () => this.folder.status() === 'loading' || this.entries.status() === 'loading',

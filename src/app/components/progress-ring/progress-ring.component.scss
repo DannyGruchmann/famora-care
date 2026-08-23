@@ -1,7 +1,4 @@
 // contents, so the svg behaves as the flex item its shrink rule expects.
-//
-// The two colours come from custom properties with the brand green as their fallback: the folder
-// overview tints the ring per path without the component needing to know the paths exist.
 :host {
   display: contents;
 }
@@ -11,16 +8,16 @@
 }
 
 .progress-ring__track {
-  stroke: var(--progress-ring-track, var(--color-primary-soft));
+  stroke: var(--color-primary-soft);
 }
 
 .progress-ring__value {
-  stroke: var(--progress-ring-value, var(--color-primary));
+  stroke: var(--color-primary);
   transition: stroke-dashoffset 0.5s;
 }
 
 .progress-ring__label {
   font-size: 13px;
   font-weight: 600;
-  fill: var(--progress-ring-value, var(--color-primary));
+  fill: var(--color-primary);
 }

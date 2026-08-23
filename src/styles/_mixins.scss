@@ -21,6 +21,15 @@ $bp-lg: 64rem;
   }
 }
 
+/// Repaints a subtree in the precaution folder's own colour. Only the palette is swapped, so every
+/// component underneath follows without knowing that a second palette exists — no component needs
+/// a variant of its own, and none of them can be forgotten when a new one is added.
+@mixin prepare-palette {
+  --color-primary: var(--color-prepare);
+  --color-primary-hover: var(--color-prepare-hover);
+  --color-primary-soft: var(--color-prepare-soft);
+}
+
 /// Readable by screen readers, invisible on screen.
 @mixin sr-only {
   position: absolute;

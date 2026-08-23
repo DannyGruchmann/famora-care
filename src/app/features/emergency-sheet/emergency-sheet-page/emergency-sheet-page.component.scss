@@ -7,6 +7,10 @@
   padding: var(--space-6) var(--space-4) var(--space-12);
 }
 
+:host(.emergency-sheet--prepare) {
+  @include prepare-palette;
+}
+
 .emergency-sheet {
   max-width: 46rem;
   margin-inline: auto;

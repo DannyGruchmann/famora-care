@@ -18,7 +18,7 @@ import { EntriesStore } from '@/app/features/entries/entries.store';
 import { folderLabel } from '@/app/features/folders/folder.label';
 import { FoldersQueries } from '@/app/features/folders/folders.queries';
 import { LegalFooter } from '@/app/features/legal/legal-footer/legal-footer.component';
-import { getMode, MODE_PREPARE } from '@/app/features/onboarding/onboarding.questions';
+import { isPreparing } from '@/app/features/onboarding/onboarding.questions';
 import { emergencySheetPath, FOLDER_ID_PARAM, ROUTES } from '@/app/routes.constants';
 import { URGENCY_ORDER } from '../dashboard.data';
 import { DashboardStore } from '../dashboard.store';
@@ -69,6 +69,9 @@ function describeHelperCount(count: number): string {
   changeDetection: ChangeDetectionStrategy.OnPush,
   // Provided here, not in root: the state belongs to this visit and to this folder.
   providers: [DashboardStore, EntriesStore],
+  // On the host rather than on an inner element, so the confirmation dialog and the failure
+  // screen are inside the repainted area too — both sit outside .dashboard-page.
+  host: { '[class.dashboard-page--prepare]': 'isPrecautionFolder()' },
 })
 export class DashboardPage {
   private readonly route = inject(ActivatedRoute);
@@ -94,8 +97,11 @@ export class DashboardPage {
 
   protected readonly heading = computed(() => folderLabel(this.store.answers()));
 
-  /** Only the precaution folder holds entries — after a death there is nothing to write down. */
-  protected readonly isPreparing = computed(() => getMode(this.store.answers()) === MODE_PREPARE);
+  /**
+   * Only the precaution folder holds entries — after a death there is nothing to write down. It
+   * also carries its own colour, which the host binding above hangs off.
+   */
+  protected readonly isPrecautionFolder = computed(() => isPreparing(this.store.answers()));
 
   protected readonly registerSubtitle = computed(() =>
     describeEntryCount(this.entries.entryCount()),
@@ -151,7 +157,7 @@ export class DashboardPage {
     // Only once the answers are in: the checklist path has no register, and asking for entries
     // it will never show is a wasted request on every folder that is not a precaution one.
     effect(() => {
-      if (this.isPreparing()) this.entries.setFolderId(this.folderId());
+      if (this.isPrecautionFolder()) this.entries.setFolderId(this.folderId());
     });
 
     // The checklist does not read the register itself — it is told, so it stays testable alone.

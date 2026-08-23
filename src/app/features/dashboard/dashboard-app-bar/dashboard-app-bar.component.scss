@@ -5,7 +5,9 @@
 .dashboard-app-bar {
   // The bottom padding carries the progress card, which is pulled up over the edge.
   padding: var(--space-3) var(--space-3) var(--space-16);
-  background-color: var(--color-primary);
+  // Brand rather than primary: the bar says which app you are in, and that does not change with
+  // the folder underneath it. Everything below the bar follows the folder's colour.
+  background-color: var(--color-brand);
   color: var(--color-on-filled);
 }
 

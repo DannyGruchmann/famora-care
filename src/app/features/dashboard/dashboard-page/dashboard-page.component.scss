@@ -4,6 +4,12 @@
   display: block;
 }
 
+// The precaution folder is a different kind of folder, and it says so. Everything inside follows
+// from the swapped palette: the app bar, the badges, the checkboxes, the buttons, the focus ring.
+:host(.dashboard-page--prepare) {
+  @include prepare-palette;
+}
+
 .dashboard-page {
   display: flex;
   flex-direction: column;
