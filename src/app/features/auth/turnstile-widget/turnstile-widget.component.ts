@@ -2,7 +2,9 @@ import {
   afterNextRender,
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
+  inject,
   input,
   output,
   viewChild,
@@ -23,6 +25,7 @@ declare global {
     turnstile?: {
       render(container: HTMLElement, options: TurnstileRenderOptions): string;
       reset(widgetId: string): void;
+      remove(widgetId: string): void;
     };
   }
 }
@@ -67,15 +70,29 @@ export class TurnstileWidget {
   readonly verified = output<string>();
 
   private readonly container = viewChild.required<ElementRef<HTMLElement>>('container');
+  private readonly destroyRef = inject(DestroyRef);
   private widgetId: string | null = null;
 
   constructor() {
     afterNextRender(() => void this.renderWidget());
+    this.destroyRef.onDestroy(() => this.removeWidget());
   }
 
   /** After a failed submit: the token was either consumed or never valid, either way stale now. */
   reset(): void {
     if (this.widgetId !== null) window.turnstile?.reset(this.widgetId);
+  }
+
+  /**
+   * Turnstile polls for its container on an interval of its own and does not notice when Angular
+   * removes it on a route change — it then logs "Cannot find Widget" for the rest of the session.
+   * Handing the widget back on destroy is what stops that.
+   */
+  private removeWidget(): void {
+    if (this.widgetId === null) return;
+
+    window.turnstile?.remove(this.widgetId);
+    this.widgetId = null;
   }
 
   private async renderWidget(): Promise<void> {
