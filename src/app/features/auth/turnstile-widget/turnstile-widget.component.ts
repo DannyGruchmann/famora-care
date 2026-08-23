@@ -59,6 +59,7 @@ function waitForTurnstile(): Promise<void> {
 @Component({
   selector: 'famora-turnstile-widget',
   templateUrl: './turnstile-widget.component.html',
+  styleUrl: './turnstile-widget.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TurnstileWidget {
