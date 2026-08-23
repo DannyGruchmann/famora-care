@@ -15,13 +15,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           # Same version the Dockerfile builds with, so CI cannot pass on a runtime
           # the deploy never sees.
-          node-version: '20.19'
+          node-version: '22.12'
           cache: npm
 
       # npm install rather than npm ci — see the Dockerfile for why the lockfile
