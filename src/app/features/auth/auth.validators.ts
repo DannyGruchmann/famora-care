@@ -34,11 +34,27 @@ export function emailValidator(control: AbstractControl): ValidationErrors | nul
   return null;
 }
 
+/**
+ * Same symbol set Supabase accepts under Authentication -> Providers -> Email -> Password
+ * Requirements — matching it here means a password valid in the browser is never rejected by the
+ * server for a symbol this pattern missed.
+ */
+const SYMBOL_PATTERN = /[!@#$%^&*()_+\-=[\]{};'\\:"|<>?,./`~]/;
+
+/**
+ * Mirrors the "Lowercase, uppercase letters, digits and symbols" policy set in the Supabase
+ * dashboard. Checking it here means a weak password is caught while typing, with a specific
+ * reason — not after submit, as a generic server error the user has no way to act on.
+ */
 export function newPasswordValidator(control: AbstractControl): ValidationErrors | null {
   const value = valueOf(control);
 
   if (value.length === 0) return failWith('Bitte Passwort wählen.');
   if (value.length < MIN_PASSWORD_LENGTH) return failWith('Noch zu kurz.');
+  if (!/[a-zäöüß]/.test(value)) return failWith('Braucht noch einen Kleinbuchstaben.');
+  if (!/[A-ZÄÖÜ]/.test(value)) return failWith('Braucht noch einen Großbuchstaben.');
+  if (!/\d/.test(value)) return failWith('Braucht noch eine Ziffer.');
+  if (!SYMBOL_PATTERN.test(value)) return failWith('Braucht noch ein Sonderzeichen, z. B. !?-_.');
 
   return null;
 }

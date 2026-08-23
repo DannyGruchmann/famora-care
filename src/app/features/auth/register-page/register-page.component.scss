@@ -84,3 +84,31 @@
   font-size: 0.875rem;
   color: var(--color-danger);
 }
+
+.register-page__confirmation {
+  text-align: center;
+}
+
+.register-page__confirmation-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-inline: auto;
+  color: var(--color-primary);
+}
+
+.register-page__confirmation-lead {
+  margin-top: var(--space-4);
+  line-height: 1.625;
+  color: var(--color-ink);
+}
+
+.register-page__address {
+  font-weight: 500;
+}
+
+.register-page__confirmation-note {
+  margin-top: var(--space-3);
+  font-size: 0.875rem;
+  line-height: 1.625;
+  color: var(--color-ink-muted);
+}

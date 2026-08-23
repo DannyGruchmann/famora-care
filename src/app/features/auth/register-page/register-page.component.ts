@@ -1,9 +1,17 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { LucideCheck } from '@lucide/angular';
+import { LucideCheck, LucideMailCheck } from '@lucide/angular';
 import { Button } from '@/app/components/button/button.component';
+import { environment } from '@/environments/environment';
 import { ROUTES } from '@/app/routes.constants';
 import { AuthLayout } from '../auth-layout/auth-layout.component';
 import { AuthSwitchLink } from '../auth-switch-link/auth-switch-link.component';
@@ -22,6 +30,7 @@ import { fieldErrorId } from '@/app/components/form-field/field-ids';
 import { PasswordField } from '../password-field/password-field.component';
 import { PasswordStrength } from '../password-strength/password-strength.component';
 import { TextField } from '@/app/components/text-field/text-field.component';
+import { TurnstileWidget } from '../turnstile-widget/turnstile-widget.component';
 
 const FIELD_IDS = {
   firstName: 'register-first-name',
@@ -36,12 +45,14 @@ const FIELD_IDS = {
     ReactiveFormsModule,
     RouterLink,
     LucideCheck,
+    LucideMailCheck,
     AuthLayout,
     AuthSwitchLink,
     Button,
     PasswordField,
     PasswordStrength,
     TextField,
+    TurnstileWidget,
   ],
   templateUrl: './register-page.component.html',
   styleUrl: './register-page.component.scss',
@@ -55,7 +66,14 @@ export class RegisterPage {
   protected readonly fieldIds = FIELD_IDS;
   protected readonly routes = ROUTES;
   protected readonly privacyErrorId = fieldErrorId(FIELD_IDS.privacy);
-  protected readonly passwordHint = `Mindestens ${MIN_PASSWORD_LENGTH} Zeichen.`;
+  protected readonly passwordHint = `Mindestens ${MIN_PASSWORD_LENGTH} Zeichen, mit Klein- und Großbuchstaben, einer Ziffer und einem Sonderzeichen.`;
+  /** Empty means: no Turnstile widget configured in .env.local — the form skips it entirely. */
+  protected readonly turnstileSiteKey = environment.turnstileSiteKey;
+
+  private readonly turnstile = viewChild(TurnstileWidget);
+  protected readonly captchaToken = signal('');
+  /** Set once signUp() succeeded but the account still needs email confirmation; null otherwise. */
+  protected readonly confirmationEmail = signal<string | null>(null);
 
   protected readonly form = this.formBuilder.nonNullable.group({
     firstName: [loadAuthDraft().firstName, firstNameValidator],
@@ -79,6 +97,12 @@ export class RegisterPage {
   protected readonly passwordError = computed(() => this.errorFor('password'));
   protected readonly privacyError = computed(() => this.errorFor('privacy'));
 
+  /** Blocks submit until the widget has a token — a configured Turnstile is not optional to solve. */
+  protected readonly canSubmit = computed(
+    () =>
+      !this.isSubmitting() && (this.turnstileSiteKey.length === 0 || this.captchaToken() !== ''),
+  );
+
   constructor() {
     // So that a look at the privacy policy does not cost half the input.
     this.form.valueChanges.subscribe(({ firstName, email }) => {
@@ -90,7 +114,8 @@ export class RegisterPage {
     this.wasSubmitted.set(true);
     this.serverError.set(undefined);
 
-    if (this.form.invalid) {
+    // The button already disables itself while unsolved — this catches Enter, which ignores that.
+    if (this.form.invalid || !this.canSubmit()) {
       this.focusFirstProblem();
       return;
     }
@@ -117,17 +142,25 @@ export class RegisterPage {
 
   private async createAccount(): Promise<void> {
     const { firstName, email, password } = this.form.getRawValue();
+    const captchaToken = this.captchaToken() || undefined;
 
     this.isSubmitting.set(true);
-    const result = await this.authQueries.signUp({ email, password, firstName });
+    const result = await this.authQueries.signUp({ email, password, firstName, captchaToken });
     this.isSubmitting.set(false);
 
     if (!result.ok) {
+      this.turnstile()?.reset();
+      this.captchaToken.set('');
       this.serverError.set(result.message);
       return;
     }
 
     clearAuthDraft();
+
+    if (result.needsEmailConfirmation) {
+      this.confirmationEmail.set(email);
+      return;
+    }
 
     /**
      * To the welcome page rather than straight into the questions: the account is a step along

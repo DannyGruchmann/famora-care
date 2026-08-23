@@ -26,6 +26,9 @@ COPY . .
 # in; generate-environment.mjs aborts the build if it is.
 ARG SUPABASE_URL
 ARG SUPABASE_ANON_KEY
+# Public by design too — it identifies the Turnstile widget, not a secret. Optional: an empty
+# value builds fine, the register and forgot-password forms just skip the CAPTCHA.
+ARG TURNSTILE_SITE_KEY
 
 RUN npm run build
 

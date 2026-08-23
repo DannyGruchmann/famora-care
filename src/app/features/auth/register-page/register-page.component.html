@@ -1,86 +1,116 @@
-<famora-auth-layout
-  heading="Registrierung"
-  intro="Ein Konto, damit Ihre Liste auch morgen noch da ist."
-  [error]="serverError()"
->
-  <form class="register-page__form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-    <famora-text-field
-      formControlName="firstName"
-      [fieldId]="fieldIds.firstName"
-      label="Ihr Vorname"
-      [error]="firstNameError()"
-      type="text"
-      autocomplete="given-name"
-    />
+@if (confirmationEmail(); as email) {
+  <famora-auth-layout heading="Fast geschafft">
+    <div class="register-page__confirmation">
+      <svg lucideMailCheck class="register-page__confirmation-icon" aria-hidden="true"></svg>
 
-    <famora-text-field
-      formControlName="email"
-      [fieldId]="fieldIds.email"
-      label="E-Mail-Adresse"
-      [error]="emailError()"
-      type="email"
-      autocomplete="email"
-    />
+      <p class="register-page__confirmation-lead">
+        Wir haben eine E-Mail an <strong class="register-page__address">{{ email }}</strong>
+        geschickt. Bitte bestätigen Sie darüber Ihr Konto, dann können Sie sich anmelden.
+      </p>
+      <p class="register-page__confirmation-note">
+        Schauen Sie auch im Spam-Ordner nach. Der Link gilt nur einmal.
+      </p>
+    </div>
 
-    <div>
-      <famora-password-field
-        formControlName="password"
-        [fieldId]="fieldIds.password"
-        label="Passwort"
-        [hint]="passwordHint"
-        [error]="passwordError()"
-        autocomplete="new-password"
+    <ng-container switch>
+      Schon bestätigt?
+      <famora-auth-switch-link [target]="routes.login">Anmelden</famora-auth-switch-link>
+    </ng-container>
+  </famora-auth-layout>
+} @else {
+  <famora-auth-layout
+    heading="Registrierung"
+    intro="Ein Konto, damit Ihre Liste auch morgen noch da ist."
+    [error]="serverError()"
+  >
+    <form class="register-page__form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <famora-text-field
+        formControlName="firstName"
+        [fieldId]="fieldIds.firstName"
+        label="Ihr Vorname"
+        [error]="firstNameError()"
+        type="text"
+        autocomplete="given-name"
       />
-      <famora-password-strength [value]="password()" />
-    </div>
 
-    <!-- Consent as a separate checkbox that has to be ticked actively: pre-selected it would not
+      <famora-text-field
+        formControlName="email"
+        [fieldId]="fieldIds.email"
+        label="E-Mail-Adresse"
+        [error]="emailError()"
+        type="email"
+        autocomplete="email"
+      />
+
+      <div>
+        <famora-password-field
+          formControlName="password"
+          [fieldId]="fieldIds.password"
+          label="Passwort"
+          [hint]="passwordHint"
+          [error]="passwordError()"
+          autocomplete="new-password"
+        />
+        <famora-password-strength [value]="password()" />
+      </div>
+
+      <!-- Consent as a separate checkbox that has to be ticked actively: pre-selected it would not
          be valid consent under Art. 7 GDPR. -->
-    <div class="register-page__consent">
-      <label class="register-page__consent-label" [attr.for]="fieldIds.privacy">
-        <!-- appearance:none — only a box drawn by hand can actually turn red on error; browsers
+      <div class="register-page__consent">
+        <label class="register-page__consent-label" [attr.for]="fieldIds.privacy">
+          <!-- appearance:none — only a box drawn by hand can actually turn red on error; browsers
              ignore the border of a native checkbox. The tick sits on top as an icon. -->
-        <span class="register-page__checkbox">
-          <input
-            class="register-page__checkbox-input"
-            [class.register-page__checkbox-input--invalid]="privacyError() !== undefined"
-            formControlName="privacy"
-            [id]="fieldIds.privacy"
-            type="checkbox"
-            [attr.aria-describedby]="privacyErrorId"
-            [attr.aria-invalid]="privacyError() !== undefined ? 'true' : null"
-          />
-          <svg
-            lucideCheck
-            class="register-page__checkbox-tick"
-            stroke-width="3"
-            aria-hidden="true"
-          ></svg>
-        </span>
+          <span class="register-page__checkbox">
+            <input
+              class="register-page__checkbox-input"
+              [class.register-page__checkbox-input--invalid]="privacyError() !== undefined"
+              formControlName="privacy"
+              [id]="fieldIds.privacy"
+              type="checkbox"
+              [attr.aria-describedby]="privacyErrorId"
+              [attr.aria-invalid]="privacyError() !== undefined ? 'true' : null"
+            />
+            <svg
+              lucideCheck
+              class="register-page__checkbox-tick"
+              stroke-width="3"
+              aria-hidden="true"
+            ></svg>
+          </span>
 
-        <span>
-          Ich habe die
-          <a class="register-page__consent-link" [routerLink]="routes.privacy">
-            Datenschutzerklärung
-          </a>
-          gelesen.
-        </span>
-      </label>
+          <span>
+            Ich habe die
+            <a class="register-page__consent-link" [routerLink]="routes.privacy">
+              Datenschutzerklärung
+            </a>
+            gelesen.
+          </span>
+        </label>
 
-      <!-- Without an indent, so the message stays on one line even on narrow devices — a second
+        <!-- Without an indent, so the message stays on one line even on narrow devices — a second
            line would push the button out from under the finger. -->
-      <p class="register-page__consent-error" [id]="privacyErrorId">{{ privacyError() }}</p>
-    </div>
+        <p class="register-page__consent-error" [id]="privacyErrorId">{{ privacyError() }}</p>
+      </div>
 
-    <!-- Only disabled while submitting — as long as something is missing it stays clickable: a
-         greyed-out button only says "no", not "why". -->
-    <famora-button type="submit" [fullWidth]="true" [disabled]="isSubmitting()">
-      {{ isSubmitting() ? 'Konto wird angelegt …' : 'Konto anlegen' }}
-    </famora-button>
-  </form>
+      <!-- Absent entirely without a configured site key, rather than rendering a widget that could
+         never verify — see turnstileSiteKey in the component. -->
+      @if (turnstileSiteKey.length > 0) {
+        <famora-turnstile-widget
+          [siteKey]="turnstileSiteKey"
+          (verified)="captchaToken.set($event)"
+        />
+      }
 
-  <ng-container switch>
-    Schon ein Konto?
-    <famora-auth-switch-link [target]="routes.login">Anmelden</famora-auth-switch-link>
-  </ng-container>
-</famora-auth-layout>
+      <!-- Disabled while submitting or, with Turnstile configured, until it is solved — a greyed-out
+         button says "not yet", the missing-field errors below say "why". -->
+      <famora-button type="submit" [fullWidth]="true" [disabled]="!canSubmit()">
+        {{ isSubmitting() ? 'Konto wird angelegt …' : 'Konto anlegen' }}
+      </famora-button>
+    </form>
+
+    <ng-container switch>
+      Schon ein Konto?
+      <famora-auth-switch-link [target]="routes.login">Anmelden</famora-auth-switch-link>
+    </ng-container>
+  </famora-auth-layout>
+}

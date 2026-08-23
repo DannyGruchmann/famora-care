@@ -21,8 +21,17 @@ export interface AuthState {
  */
 export type AuthResult = { ok: true } | { ok: false; message: string };
 
+/**
+ * Separate from AuthResult: whether an account was created and whether it can sign in right away
+ * are two different questions. With email confirmation switched on in the Supabase project, an
+ * account exists but has no session yet — the caller needs to know that to show the right screen.
+ */
+export type SignUpResult =
+  { ok: true; needsEmailConfirmation: boolean } | { ok: false; message: string };
+
 export interface SignUpInput {
   email: string;
   password: string;
   firstName: string;
+  captchaToken?: string;
 }

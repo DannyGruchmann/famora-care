@@ -2,12 +2,14 @@ import { inject, Injectable } from '@angular/core';
 import type { AuthError } from '@supabase/supabase-js';
 import { SupabaseService } from '@/app/lib/supabase.service';
 import { ROUTES } from '@/app/routes.constants';
-import type { AuthResult, SignUpInput } from './auth.types';
+import type { AuthResult, SignUpInput, SignUpResult } from './auth.types';
 
 const GENERIC_ERROR =
   'Das hat gerade nicht geklappt. Bitte versuchen Sie es in einem Moment noch einmal.';
 
-const NOT_CONFIGURED: AuthResult = { ok: false, message: GENERIC_ERROR };
+// No explicit AuthResult annotation: signUp() returns the narrower SignUpResult, and this needs
+// to fit both — inferred as { ok: false; message: string } it does, annotated it would not.
+const NOT_CONFIGURED = { ok: false as const, message: GENERIC_ERROR };
 
 /**
  * Supabase answers in English and partly in technical terms. Only what the user can change is
@@ -19,9 +21,14 @@ const NOT_CONFIGURED: AuthResult = { ok: false, message: GENERIC_ERROR };
 const ERROR_MESSAGES: Record<string, string | undefined> = {
   user_already_exists: 'Zu dieser Adresse gibt es schon ein Konto. Melden Sie sich stattdessen an.',
   email_exists: 'Zu dieser Adresse gibt es schon ein Konto. Melden Sie sich stattdessen an.',
-  weak_password: 'Dieses Passwort ist zu leicht zu erraten. Bitte wählen Sie ein längeres.',
+  // Length and character rules are already checked before the request leaves the browser — see
+  // newPasswordValidator. What still reaches the server despite that is almost always the leaked-
+  // password check, so this must not claim the password is too short.
+  weak_password:
+    'Dieses Passwort ist zu schwach oder wurde bereits in einem Datenleck gefunden. Bitte wählen Sie ein anderes.',
   over_email_send_rate_limit: 'Zu viele Versuche. Bitte warten Sie einen Moment.',
   over_request_rate_limit: 'Zu viele Versuche. Bitte warten Sie einen Moment.',
+  captcha_failed: 'Die Sicherheitsprüfung ist fehlgeschlagen. Bitte versuchen Sie es erneut.',
   // Happens on typos in the domain ("@gmial.com"). Without its own message the user would only
   // see "did not work" — and start looking for the mistake on their side.
   email_address_invalid:
@@ -52,11 +59,13 @@ export class AuthQueries {
   private readonly supabase = inject(SupabaseService);
 
   /**
-   * Creates the account and signs in directly. This assumes "Confirm email" is switched off under
-   * Authentication -> Sign In / Providers in the Supabase project. If it is on, no session comes
-   * back here and the user then faces an application that will not let them in.
+   * Creates the account. Whether that also signs the user in depends on "Confirm email" under
+   * Authentication -> Providers -> Email in the Supabase project: off, and a session comes back
+   * immediately; on, and the account exists but data.session is null until the link in the
+   * confirmation mail is clicked. needsEmailConfirmation tells the caller which of the two
+   * happened, so it can show the right screen instead of guessing from the session state.
    */
-  async signUp({ email, password, firstName }: SignUpInput): Promise<AuthResult> {
+  async signUp({ email, password, firstName, captchaToken }: SignUpInput): Promise<SignUpResult> {
     const client = this.supabase.client;
 
     // Missing configuration is a fault of the application, not of the user — the cause goes to
@@ -64,15 +73,19 @@ export class AuthQueries {
     if (client === null) return NOT_CONFIGURED;
 
     try {
-      const { error } = await client.auth.signUp({
+      const { data, error } = await client.auth.signUp({
         email: email.trim(),
         password,
-        // Lands in raw_user_meta_data. Enough for a display name; a profiles table only pays off
-        // once relatives need real records.
-        options: { data: { first_name: firstName.trim() } },
+        options: {
+          // Lands in raw_user_meta_data. Enough for a display name; a profiles table only pays
+          // off once relatives need real records.
+          data: { first_name: firstName.trim() },
+          captchaToken,
+        },
       });
+      if (error !== null) return { ok: false, message: toGermanMessage(error) };
 
-      return toResult(error);
+      return { ok: true, needsEmailConfirmation: data.session === null };
     } catch {
       // No network, dead DNS, paused project: all cases where the user did nothing wrong and
       // only needs to know that it is not on them.
@@ -107,13 +120,14 @@ export class AuthQueries {
     }
   }
 
-  async requestPasswordReset(email: string): Promise<AuthResult> {
+  async requestPasswordReset(email: string, captchaToken?: string): Promise<AuthResult> {
     const client = this.supabase.client;
     if (client === null) return NOT_CONFIGURED;
 
     try {
       const { error } = await client.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: appUrl(ROUTES.resetPassword),
+        captchaToken,
       });
 
       return toResult(error);

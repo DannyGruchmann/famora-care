@@ -42,7 +42,7 @@ export class ResetPasswordPage {
 
   protected readonly passwordFieldId = PASSWORD_FIELD_ID;
   protected readonly routes = ROUTES;
-  protected readonly passwordHint = `Mindestens ${MIN_PASSWORD_LENGTH} Zeichen.`;
+  protected readonly passwordHint = `Mindestens ${MIN_PASSWORD_LENGTH} Zeichen, mit Klein- und Großbuchstaben, einer Ziffer und einem Sonderzeichen.`;
   protected readonly status = this.auth.status;
 
   protected readonly form = this.formBuilder.nonNullable.group({

@@ -9,17 +9,22 @@ before one. Angular 21, zoneless, Supabase as the backend.
 npm install
 ```
 
-Create `.env.local` in the project root and fill in the two values below. Both come from the Supabase dashboard under
-**Project Settings -> API**:
+Create `.env.local` in the project root and fill in the values below.
 
-| Variable            | Where it comes from                      |
-| ------------------- | ---------------------------------------- |
-| `SUPABASE_URL`      | Project URL, `https://<ref>.supabase.co` |
-| `SUPABASE_ANON_KEY` | The **anon / publishable** key           |
+| Variable             | Where it comes from                                                   |
+| -------------------- | --------------------------------------------------------------------- |
+| `SUPABASE_URL`       | Supabase dashboard -> Project Settings -> API -> Project URL          |
+| `SUPABASE_ANON_KEY`  | Same page -- the **anon / publishable** key                           |
+| `TURNSTILE_SITE_KEY` | Cloudflare dashboard -> Turnstile -> the widget's Site Key. Optional. |
 
 `SUPABASE_ANON_KEY` must never hold the `service_role` key. It bypasses Row Level Security and
 is compiled into the public browser bundle, so the build aborts on it -- see
 `scripts/generate-environment.mjs`.
+
+`TURNSTILE_SITE_KEY` is public by design too, same as the anon key. Leaving it empty builds fine
+-- the register and forgot-password forms simply skip the CAPTCHA. The matching Secret Key is
+never in this repo; it belongs in the Supabase dashboard under Authentication -> Protection ->
+CAPTCHA protection.
 
 The generator runs once when the dev server starts, not on every request. After changing
 `.env.local`, restart `npm start` -- otherwise the bundle keeps serving the values it was built
