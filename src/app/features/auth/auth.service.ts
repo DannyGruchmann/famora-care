@@ -1,6 +1,7 @@
 import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
 import type { AuthChangeEvent, User } from '@supabase/supabase-js';
 import { SupabaseService, type FamoraSupabaseClient } from '@/app/lib/supabase.service';
+import { readLinkError } from './auth.link-errors';
 import type { AuthState } from './auth.types';
 
 const LOADING: AuthState = { status: 'loading', user: null };
@@ -41,6 +42,13 @@ export class AuthService {
   readonly firstName = computed(() => firstNameOf(this.state().user));
   /** True while the session comes from a reset link and no new password has been saved yet. */
   readonly isRecoveringPassword = this.recovering.asReadonly();
+
+  /**
+   * Why a link was refused, for whoever arrived through one. Read here rather than in the page,
+   * because every field initialiser runs before the Supabase client can clear the fragment — a
+   * component looking later finds an empty address.
+   */
+  readonly linkError = readLinkError(window.location.hash);
 
   private markSessionKnown: () => void = () => undefined;
 

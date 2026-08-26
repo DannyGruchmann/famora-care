@@ -16,6 +16,7 @@ import { REDIRECT_PARAM, ROUTES } from '@/app/routes.constants';
 import { AuthLayout } from '../auth-layout/auth-layout.component';
 import { AuthSwitchLink } from '../auth-switch-link/auth-switch-link.component';
 import { AuthQueries } from '../auth.queries';
+import { AuthService } from '../auth.service';
 import { clearAuthDraft, loadAuthDraft, saveAuthDraft } from '../auth.storage';
 import {
   currentPasswordValidator,
@@ -54,6 +55,7 @@ export class LoginPage {
   private readonly authQueries = inject(AuthQueries);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly auth = inject(AuthService);
 
   protected readonly fieldIds = FIELD_IDS;
   protected readonly routes = ROUTES;
@@ -70,7 +72,9 @@ export class LoginPage {
 
   protected readonly wasSubmitted = signal(false);
   protected readonly isSubmitting = signal(false);
-  protected readonly serverError = signal<string | undefined>(undefined);
+  // An expired or reused link is sent here by the Site URL fallback. It shares the slot with a
+  // failed sign-in, so the next attempt clears it on its own.
+  protected readonly serverError = signal(this.auth.linkError);
 
   /** Control errors are not signals, so the error texts re-derive from every value change. */
   private readonly value = toSignal(this.form.valueChanges, {
