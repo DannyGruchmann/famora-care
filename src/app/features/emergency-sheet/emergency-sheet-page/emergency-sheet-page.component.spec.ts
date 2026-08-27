@@ -3,6 +3,7 @@ import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { EntriesQueries } from '@/app/features/entries/entries.queries';
 import type { EntryKind, FolderEntry } from '@/app/features/entries/entry.types';
+import type { Helper } from '@/app/features/family/family.types';
 import type { Folder } from '@/app/features/folders/folder.types';
 import { FoldersQueries } from '@/app/features/folders/folders.queries';
 import { MODE_PREPARE } from '@/app/features/onboarding/onboarding.questions';
@@ -10,7 +11,7 @@ import { EmergencySheetPage } from './emergency-sheet-page.component';
 
 const FOLDER_ID = 'folder-1';
 
-function folderWith(helpers: { id: string; name: string }[] = []): Folder {
+function folderWith(helpers: Helper[] = []): Folder {
   return {
     id: FOLDER_ID,
     answers: { mode: [MODE_PREPARE] },
@@ -99,11 +100,14 @@ describe('EmergencySheetPage', () => {
     expect(textOf(fixture, '.emergency-sheet__field-value')).toContain('Bankschließfach Sparkasse');
   });
 
-  it('names the people from the folder, so the family finds them without the app', async () => {
-    const folder = folderWith([{ id: 'helper-1', name: 'Anna' }]);
+  it('draws the family tree, so whoever finds the paper sees who belongs to whom', async () => {
+    const folder = folderWith([
+      { id: 'helper-1', name: 'Anna', relation: 'child', deceased: false },
+    ]);
     const fixture = await renderSheet([entryWith('location')], folder);
 
-    expect(textOf(fixture, '.emergency-sheet__helper')).toEqual(['Anna']);
+    expect(textOf(fixture, '.family-tree__name')).toContain('Anna');
+    expect(textOf(fixture, '.family-tree__row-label')).toContain('Kinder');
   });
 
   it('states on the paper itself that it holds no passwords and no documents', async () => {

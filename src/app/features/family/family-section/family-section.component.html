@@ -1,0 +1,64 @@
+<p class="family-section__hint">{{ hint() }}</p>
+
+<famora-family-tree class="family-section__tree" [tree]="tree()" [emptyText]="emptyTree" />
+
+@if (helpers().length > 0) {
+  <ul class="family-section__list">
+    @for (helper of helpers(); track helper.id) {
+      <li class="family-section__entry">
+        <span class="family-section__person">
+          <span class="family-section__name">{{ helper.name }}</span>
+          <span class="family-section__load">{{ describePerson(helper) }}</span>
+        </span>
+
+        <button
+          type="button"
+          class="family-section__remove"
+          [attr.aria-label]="helper.name + ' entfernen'"
+          (click)="removed.emit(helper.id)"
+        >
+          <svg lucideX class="family-section__remove-icon" aria-hidden="true"></svg>
+        </button>
+      </li>
+    }
+  </ul>
+}
+
+<form class="family-section__form" (submit)="onSubmit($event)">
+  <div class="family-section__fields">
+    <label class="family-section__field-label" for="helper-name">Name der Person</label>
+    <input
+      id="helper-name"
+      type="text"
+      class="family-section__input"
+      placeholder="Name eintragen"
+      [value]="name()"
+      (input)="onNameInput($event)"
+    />
+
+    <label class="family-section__field-label" for="helper-relation">Beziehung</label>
+    <select id="helper-relation" class="family-section__select" (change)="onRelationChange($event)">
+      @for (option of relations; track option.relation) {
+        <option [value]="option.relation" [selected]="option.relation === relation()">
+          {{ option.optionLabel }}
+        </option>
+      }
+    </select>
+  </div>
+
+  <div class="family-section__actions">
+    <label class="family-section__check">
+      <input
+        type="checkbox"
+        class="family-section__checkbox"
+        [checked]="deceased()"
+        (change)="onDeceasedChange($event)"
+      />
+      <span class="family-section__check-text">Bereits verstorben</span>
+    </label>
+
+    <famora-button type="submit" variant="secondary" [disabled]="isEmpty()">
+      Hinzufügen
+    </famora-button>
+  </div>
+</form>

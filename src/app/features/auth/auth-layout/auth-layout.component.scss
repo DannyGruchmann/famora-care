@@ -14,6 +14,12 @@
   max-width: 28rem;
   margin-inline: auto;
   padding: var(--space-12) var(--space-5) var(--space-10);
+
+  // Same card, just given more room to breathe once there is an actual desktop viewport to use.
+  @include respond-from($bp-lg) {
+    max-width: 34rem;
+    padding: var(--space-16) var(--space-5) var(--space-12);
+  }
 }
 
 .auth-layout__brand {
@@ -36,6 +42,10 @@
   &:hover {
     text-decoration: underline;
   }
+
+  @include respond-from($bp-lg) {
+    font-size: 1rem;
+  }
 }
 
 .auth-layout__heading {
@@ -44,6 +54,10 @@
   line-height: 1.25;
   text-align: center;
   color: var(--color-ink);
+
+  @include respond-from($bp-lg) {
+    font-size: 2.5rem;
+  }
 }
 
 // One slot for the intro line and for the message after a failed submit — they never show at the
@@ -78,6 +92,10 @@
 
   @include respond-from($bp-sm) {
     padding: var(--space-7);
+  }
+
+  @include respond-from($bp-lg) {
+    padding: var(--space-8);
   }
 }
 

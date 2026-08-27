@@ -1,0 +1,33 @@
+<ol class="family-tree__rows">
+  @for (row of tree().rows; track row.id) {
+    <li class="family-tree__row" [class.family-tree__row--aside]="row.isOutsideTree">
+      @if (row.label !== '') {
+        <p class="family-tree__row-label">{{ row.label }}</p>
+      }
+
+      <ul class="family-tree__people">
+        @for (person of row.people; track person.id) {
+          <li
+            class="family-tree__person"
+            [class.family-tree__person--centre]="person.isCentre"
+            [class.family-tree__person--gone]="person.deceased"
+          >
+            <span class="family-tree__name">{{ person.name }}</span>
+
+            @if (person.roleLabel !== '') {
+              <span class="family-tree__role">{{ person.roleLabel }}</span>
+            }
+
+            @if (person.deceased) {
+              <span class="family-tree__state">verstorben</span>
+            }
+          </li>
+        }
+      </ul>
+    </li>
+  }
+</ol>
+
+@if (tree().isEmpty && emptyText() !== '') {
+  <p class="family-tree__empty">{{ emptyText() }}</p>
+}

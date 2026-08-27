@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import type { Helper } from '@/app/features/family/family.types';
 import { FoldersQueries } from '@/app/features/folders/folders.queries';
 import type { Folder } from '@/app/features/folders/folder.types';
 import {
@@ -28,6 +29,10 @@ function isoDaysAgo(days: number): string {
   date.setDate(date.getDate() - days);
 
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+function personWith(overrides: Partial<Helper> = {}): Helper {
+  return { id: 'helper-1', name: 'Anna', relation: 'other', deceased: false, ...overrides };
 }
 
 function folderWith(overrides: Partial<Folder> = {}): Folder {
@@ -152,7 +157,7 @@ describe('DashboardStore', () => {
   });
 
   it('drops the assignments of a removed helper', async () => {
-    const helpers = [{ id: 'helper-1', name: 'Anna' }];
+    const helpers = [personWith()];
     const assignments = { [INSURANCE_TASK_ID]: 'helper-1' };
     const { store } = storeWithFolder(folderWith({ helpers, assignments }));
     await openFolder(store);
@@ -166,7 +171,7 @@ describe('DashboardStore', () => {
   });
 
   it('counts only the open tasks against a helper', async () => {
-    const helpers = [{ id: 'helper-1', name: 'Anna' }];
+    const helpers = [personWith()];
     const assignments = { [INSURANCE_TASK_ID]: 'helper-1' };
     const { store } = storeWithFolder(folderWith({ helpers, assignments }));
     await openFolder(store);
@@ -176,6 +181,24 @@ describe('DashboardStore', () => {
     store.toggleTask(INSURANCE_TASK_ID);
 
     expect(store.helpers()[0].openTaskCount).toBe(0);
+  });
+
+  it('keeps a deceased person out of the assignment list without dropping them', async () => {
+    const helpers = [personWith({ relation: 'partner', deceased: true })];
+    const { store } = storeWithFolder(folderWith({ helpers }));
+    await openFolder(store);
+
+    expect(store.assignableHelpers()).toEqual([]);
+    expect(store.helpers()).toHaveLength(1);
+  });
+
+  it('ignores a person added without a name', async () => {
+    const { store } = storeWithFolder(folderWith());
+    await openFolder(store);
+
+    store.addHelper({ name: '   ', relation: 'child', deceased: false });
+
+    expect(store.helpers()).toEqual([]);
   });
 
   it('does not write back what it just read', async () => {

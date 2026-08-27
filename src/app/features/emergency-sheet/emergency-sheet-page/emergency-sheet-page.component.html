@@ -54,13 +54,9 @@
 
       @if (helpers().length > 0) {
         <section class="emergency-sheet__section">
-          <h2 class="emergency-sheet__section-title">Diese Menschen wissen Bescheid</h2>
+          <h2 class="emergency-sheet__section-title">Die Familie</h2>
 
-          <ul class="emergency-sheet__helpers">
-            @for (helper of helpers(); track helper.id) {
-              <li class="emergency-sheet__helper">{{ helper.name }}</li>
-            }
-          </ul>
+          <famora-family-tree class="emergency-sheet__tree" [tree]="tree()" />
         </section>
       }
 

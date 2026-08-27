@@ -1,4 +1,4 @@
-import type { Helper } from '@/app/features/dashboard/dashboard.types';
+import type { Helper } from '@/app/features/family/family.types';
 import type { OnboardingAnswers } from '@/app/features/onboarding/onboarding.types';
 
 /** A folder as the app sees it — the table itself writes snake_case. */

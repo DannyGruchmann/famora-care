@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import type { Helper } from '@/app/features/family/family.types';
 import { getDeadlineLabel } from '../dashboard.utils';
-import type { Helper, Task } from '../dashboard.types';
+import type { Task } from '../dashboard.types';
 
 @Component({
   selector: 'famora-task-item',

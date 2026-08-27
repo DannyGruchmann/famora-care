@@ -8,13 +8,19 @@ import {
 } from '@/app/features/onboarding/onboarding.questions';
 import type { OnboardingAnswers } from '@/app/features/onboarding/onboarding.types';
 import type { EntryKind } from '@/app/features/entries/entry.types';
+import { buildFamilyTree, familyCentreName } from '@/app/features/family/family.tree';
+import type { Helper, HelperDraft } from '@/app/features/family/family.types';
 import { PRESETS, URGENCY_ORDER } from './dashboard.data';
 import { buildFolderTasks, resolveCompletedIds, summarizeTasks } from './dashboard.progress';
 import { matchesRequirements } from './dashboard.utils';
-import type { DashboardPreset, Helper, Task, Urgency } from './dashboard.types';
+import type { DashboardPreset, Task, Urgency } from './dashboard.types';
 
 /** missing: the id belongs to no folder of this account — deleted, or someone else's. */
 export type DashboardStatus = 'loading' | 'ready' | 'missing' | 'error';
+
+function toHelper(name: string, draft: HelperDraft): Helper {
+  return { id: crypto.randomUUID(), name, relation: draft.relation, deceased: draft.deceased };
+}
 
 /**
  * Everything the dashboard screen knows. Deliberately not providedIn: 'root' — the page provides
@@ -42,6 +48,9 @@ export class DashboardStore {
 
   /** Reported by the page from the register — the checklist itself never reads entries. */
   private readonly filledKindsState = signal<readonly EntryKind[]>([]);
+
+  /** Reported by the page from the session, for the same reason: the store stays free of auth. */
+  private readonly viewerNameState = signal('');
 
   /**
    * Only save after a change by the user. Without this mark, loading alone would trigger a write
@@ -99,6 +108,21 @@ export class DashboardStore {
     })),
   );
 
+  /** Whoever died cannot take a task on. They stay in the tree and out of this list. */
+  readonly assignableHelpers = computed(() => this.helpers().filter((helper) => !helper.deceased));
+
+  /**
+   * The same people as `helpers`, arranged around the person the folder is about. Derived here
+   * rather than in the page, because the dashboard and the emergency sheet both show it and two
+   * places building it would drift.
+   */
+  readonly familyTree = computed(() =>
+    buildFamilyTree(
+      this.helpersState(),
+      familyCentreName(this.answersState(), this.viewerNameState()),
+    ),
+  );
+
   private readonly summary = computed(() => summarizeTasks(this.tasks()));
 
   readonly doneCount = computed(() => this.summary().doneCount);
@@ -127,6 +151,11 @@ export class DashboardStore {
     this.filledKindsState.set(kinds);
   }
 
+  /** The first name of whoever is signed in — the centre of the tree on the precaution path. */
+  setViewerName(firstName: string): void {
+    this.viewerNameState.set(firstName);
+  }
+
   retry(): void {
     this.loadErrorState.set(undefined);
     this.attempt.update((current) => current + 1);
@@ -143,12 +172,12 @@ export class DashboardStore {
     );
   }
 
-  addHelper(name: string): void {
-    const trimmed = name.trim();
-    if (trimmed === '') return;
+  addHelper(draft: HelperDraft): void {
+    const name = draft.name.trim();
+    if (name === '') return;
 
     this.isDirty = true;
-    this.helpersState.update((current) => [...current, { id: crypto.randomUUID(), name: trimmed }]);
+    this.helpersState.update((current) => [...current, toHelper(name, draft)]);
   }
 
   removeHelper(helperId: string): void {
