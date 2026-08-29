@@ -1,0 +1,62 @@
+// Family section: one entered person, name over relation and workload.
+
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.helper-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-xl);
+}
+
+.helper-row__person {
+  flex: 1;
+  min-width: 0;
+}
+
+.helper-row__name {
+  display: block;
+  overflow: hidden;
+  font-size: 0.95rem;
+  color: var(--color-ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.helper-row__load {
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+}
+
+.helper-row__edit {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-full);
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    background-color 0.2s;
+
+  @include focus-ring;
+
+  &:hover {
+    background-color: var(--color-surface-soft);
+    color: var(--color-primary);
+  }
+}
+
+.helper-row__edit-icon {
+  width: 1rem;
+  height: 1rem;
+}

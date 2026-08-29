@@ -1,0 +1,95 @@
+// Family section: the form that enters a person and the one that corrects them are the same form.
+
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.helper-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.helper-form__fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.helper-form__field-label {
+  @include sr-only;
+}
+
+// Grows, but may drop the select onto its own line rather than squeeze both below 320px.
+.helper-form__input {
+  flex: 1 1 10rem;
+  min-width: 0;
+  padding: 0.625rem var(--space-4);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  outline: none;
+
+  &::placeholder {
+    color: var(--color-ink-soft);
+  }
+
+  &:focus-visible {
+    border-color: var(--color-primary);
+  }
+}
+
+.helper-form__select {
+  flex: 0 1 auto;
+  padding: 0.625rem var(--space-3);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  outline: none;
+
+  &:focus-visible {
+    border-color: var(--color-primary);
+  }
+}
+
+.helper-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.helper-form__check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+}
+
+.helper-form__checkbox {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.helper-form__check-text {
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+}
+
+// Three buttons do not fit next to the checkbox at 320px. They wrap as a group rather than one by
+// one, so "Löschen" never ends up alone on a line looking like the main action.
+.helper-form__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}

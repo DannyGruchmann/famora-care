@@ -1,4 +1,4 @@
-import type { Relation } from './family.types';
+import { DEFAULT_RELATION, type Relation } from './family.types';
 
 /** How one relation presents itself, in the tree and in the form. */
 export interface RelationConfig {
@@ -28,9 +28,6 @@ export const RELATIONS: RelationConfig[] = [
   { relation: 'grandchild', groupLabel: 'Enkelkinder', optionLabel: 'Enkelkind' },
   { relation: 'other', groupLabel: 'Weitere Vertrauenspersonen', optionLabel: 'Weitere Person' },
 ];
-
-/** What an unknown or missing relation reads as. Also what the form starts on. */
-export const DEFAULT_RELATION: Relation = 'other';
 
 /**
  * Anything the app does not know becomes 'other'. A folder written by a later version, or a row

@@ -192,6 +192,63 @@ describe('DashboardStore', () => {
     expect(store.helpers()).toHaveLength(1);
   });
 
+  /**
+   * The reason editing exists at all: folders written before the family tree have everybody under
+   * 'other', and deleting them to enter them again would take their tasks with them.
+   */
+  it('renames a person and moves them into the tree without losing their task', async () => {
+    const helpers = [personWith()];
+    const assignments = { [INSURANCE_TASK_ID]: 'helper-1' };
+    const { store } = storeWithFolder(folderWith({ helpers, assignments }));
+    await openFolder(store);
+
+    store.updateHelper('helper-1', {
+      name: '  Anna Weber  ',
+      relation: 'sibling',
+      deceased: false,
+    });
+
+    const [person] = store.helpers();
+    expect(person.name).toBe('Anna Weber');
+    expect(person.relation).toBe('sibling');
+    expect(taskById(store, INSURANCE_TASK_ID).assignedTo).toBe('helper-1');
+  });
+
+  it('hands the task back to nobody when a person is marked as deceased', async () => {
+    const helpers = [personWith()];
+    const assignments = { [INSURANCE_TASK_ID]: 'helper-1' };
+    const { store } = storeWithFolder(folderWith({ helpers, assignments }));
+    await openFolder(store);
+
+    store.updateHelper('helper-1', { name: 'Anna', relation: 'parent', deceased: true });
+
+    // The person stays in the tree, only the assignment goes — otherwise the task would point at
+    // somebody the dropdown no longer offers.
+    expect(store.helpers()).toHaveLength(1);
+    expect(store.assignableHelpers()).toEqual([]);
+    expect(taskById(store, INSURANCE_TASK_ID).assignedTo).toBeNull();
+  });
+
+  it('ignores an update that would leave a person without a name', async () => {
+    const { store } = storeWithFolder(folderWith({ helpers: [personWith()] }));
+    await openFolder(store);
+
+    store.updateHelper('helper-1', { name: '   ', relation: 'child', deceased: false });
+
+    expect(store.helpers()[0].name).toBe('Anna');
+    expect(store.helpers()[0].relation).toBe('other');
+  });
+
+  it('leaves everybody alone when the id belongs to no one', async () => {
+    const { store } = storeWithFolder(folderWith({ helpers: [personWith()] }));
+    await openFolder(store);
+
+    store.updateHelper('helper-2', { name: 'Bernd', relation: 'child', deceased: false });
+
+    expect(store.helpers()).toHaveLength(1);
+    expect(store.helpers()[0].name).toBe('Anna');
+  });
+
   it('ignores a person added without a name', async () => {
     const { store } = storeWithFolder(folderWith());
     await openFolder(store);

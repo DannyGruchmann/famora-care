@@ -1,0 +1,50 @@
+<form class="helper-form" (submit)="onSubmit($event)">
+  <div class="helper-form__fields">
+    <label class="helper-form__field-label" [attr.for]="fieldId('name')">Name der Person</label>
+    <input
+      #nameInput
+      [id]="fieldId('name')"
+      type="text"
+      class="helper-form__input"
+      placeholder="Name eintragen"
+      [value]="name()"
+      (input)="onNameInput($event)"
+    />
+
+    <label class="helper-form__field-label" [attr.for]="fieldId('relation')">Beziehung</label>
+    <select
+      [id]="fieldId('relation')"
+      class="helper-form__select"
+      (change)="onRelationChange($event)"
+    >
+      @for (option of relations; track option.relation) {
+        <option [value]="option.relation" [selected]="option.relation === relation()">
+          {{ option.optionLabel }}
+        </option>
+      }
+    </select>
+  </div>
+
+  <div class="helper-form__actions">
+    <label class="helper-form__check">
+      <input
+        type="checkbox"
+        class="helper-form__checkbox"
+        [checked]="deceased()"
+        (change)="onDeceasedChange($event)"
+      />
+      <span class="helper-form__check-text">Bereits verstorben</span>
+    </label>
+
+    <div class="helper-form__buttons">
+      <famora-button type="submit" variant="secondary" [disabled]="isEmpty()">
+        {{ submitLabel() }}
+      </famora-button>
+
+      @if (isEditing()) {
+        <famora-button variant="ghost" (click)="cancelled.emit()">Abbrechen</famora-button>
+        <famora-button variant="danger" (click)="deleted.emit()">Löschen</famora-button>
+      }
+    </div>
+  </div>
+</form>

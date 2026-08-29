@@ -1,7 +1,5 @@
 // Family section of the dashboard: the tree, the same people as a list, and the form feeding both.
 
-@use 'mixins' as *;
-
 :host {
   display: flex;
   flex-direction: column;
@@ -27,138 +25,16 @@
   gap: var(--space-2);
 }
 
-.family-section__entry {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: 0.625rem 0.875rem;
-  border: 1px solid var(--color-line);
+// Framed where the row it replaces was, so the list keeps its shape while one entry is open.
+.family-section__editor {
+  padding: var(--space-3) 0.875rem;
+  border: 1px solid var(--color-line-strong);
   border-radius: var(--radius-xl);
-}
-
-.family-section__person {
-  flex: 1;
-  min-width: 0;
-}
-
-.family-section__name {
-  display: block;
-  overflow: hidden;
-  font-size: 0.95rem;
-  color: var(--color-ink);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.family-section__load {
-  font-size: 0.875rem;
-  color: var(--color-ink-muted);
-}
-
-.family-section__remove {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: var(--radius-full);
-  color: var(--color-ink-soft);
-  transition:
-    color 0.2s,
-    background-color 0.2s;
-
-  @include focus-ring;
-
-  &:hover {
-    background-color: var(--color-surface-soft);
-    color: var(--color-ink);
-  }
-}
-
-.family-section__remove-icon {
-  width: 1rem;
-  height: 1rem;
+  background-color: var(--color-surface);
 }
 
 // Separated from the list above: what is already there and what is being added are two things.
-.family-section__form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+.family-section__add {
   padding-top: var(--space-4);
   border-top: 1px solid var(--color-line);
-}
-
-.family-section__fields {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.family-section__field-label {
-  @include sr-only;
-}
-
-// Grows, but may drop the select onto its own line rather than squeeze both below 320px.
-.family-section__input {
-  flex: 1 1 10rem;
-  min-width: 0;
-  padding: 0.625rem var(--space-4);
-  border: 1px solid var(--color-line-strong);
-  border-radius: var(--radius-full);
-  background-color: var(--color-surface);
-  color: var(--color-ink);
-  outline: none;
-
-  &::placeholder {
-    color: var(--color-ink-soft);
-  }
-
-  &:focus-visible {
-    border-color: var(--color-primary);
-  }
-}
-
-.family-section__select {
-  flex: 0 1 auto;
-  padding: 0.625rem var(--space-3);
-  border: 1px solid var(--color-line-strong);
-  border-radius: var(--radius-full);
-  background-color: var(--color-surface);
-  font-size: 0.875rem;
-  color: var(--color-ink-muted);
-  cursor: pointer;
-  outline: none;
-
-  &:focus-visible {
-    border-color: var(--color-primary);
-  }
-}
-
-.family-section__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.family-section__check {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  cursor: pointer;
-}
-
-.family-section__checkbox {
-  width: 1rem;
-  height: 1rem;
-  accent-color: var(--color-primary);
-  cursor: pointer;
-}
-
-.family-section__check-text {
-  font-size: 0.875rem;
-  color: var(--color-ink-muted);
 }

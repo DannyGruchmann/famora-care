@@ -1,37 +1,53 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
-import { LucideX } from '@lucide/angular';
-import { Button } from '@/app/components/button/button.component';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  Injector,
+  input,
+  output,
+  signal,
+  viewChildren,
+} from '@angular/core';
 import { FamilyTreeView } from '../family-tree/family-tree.component';
-import { DEFAULT_RELATION, findRelation, RELATIONS } from '../family.relations';
+import { HelperForm } from '../helper-form/helper-form.component';
+import { HelperRow } from '../helper-row/helper-row.component';
 import type { FamilyTree } from '../family.tree';
-import type { HelperDraft, HelperWithLoad, Relation } from '../family.types';
+import {
+  emptyHelperDraft,
+  toHelperDraft,
+  type HelperDraft,
+  type HelperWithLoad,
+} from '../family.types';
 
 const EMPTY_TREE =
   'Tragen Sie unten ein, wer zur Familie gehört – der Stammbaum füllt sich mit jeder Person.';
 
-function describeLoad(openTaskCount: number): string {
-  if (openTaskCount === 0) return 'Noch keine Aufgabe übernommen';
-  if (openTaskCount === 1) return '1 offene Aufgabe';
-
-  return `${openTaskCount} offene Aufgaben`;
-}
-
-/** Relation first, because that is what the list is now sorted and read by. */
-function describePerson(person: HelperWithLoad): string {
-  const relation = findRelation(person.relation).optionLabel;
-  if (person.deceased) return `${relation} · verstorben`;
-
-  return `${relation} · ${describeLoad(person.openTaskCount)}`;
+/**
+ * Whether two drafts describe the same person. Guards the open edit form against being refilled:
+ * `helpers` carries the open-task count, so ticking a checklist item elsewhere on the page hands
+ * this section a brand-new array, and without this every such change would overwrite what somebody
+ * had just typed into the form.
+ */
+function isSameDraft(one: HelperDraft, other: HelperDraft): boolean {
+  return (
+    one.name === other.name && one.relation === other.relation && one.deceased === other.deceased
+  );
 }
 
 /**
  * Who belongs to the folder: the tree above, the same people as a list below, and one form that
  * feeds both. One entry per person on purpose — a separate tree would mean typing every aunt
  * twice and having no answer for why she is in one place and not the other.
+ *
+ * Editing happens in place of a row rather than in a dialog, the same way entry-section does it.
+ * That it is possible at all matters most for folders written before the tree existed: everybody
+ * in them sits under 'other', and re-entering them by hand would drop their task assignments.
  */
 @Component({
   selector: 'famora-family-section',
-  imports: [Button, FamilyTreeView, LucideX],
+  imports: [FamilyTreeView, HelperForm, HelperRow],
   templateUrl: './family-section.component.html',
   styleUrl: './family-section.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,43 +58,69 @@ export class FamilySection {
   readonly tree = input.required<FamilyTree>();
 
   readonly added = output<HelperDraft>();
+  readonly changed = output<{ id: string; draft: HelperDraft }>();
   readonly removed = output<string>();
 
-  protected readonly relations = RELATIONS;
   protected readonly emptyTree = EMPTY_TREE;
-  protected readonly describePerson = describePerson;
 
-  protected readonly name = signal('');
-  protected readonly relation = signal<Relation>(DEFAULT_RELATION);
-  protected readonly deceased = signal(false);
+  private readonly injector = inject(Injector);
+  private readonly rows = viewChildren(HelperRow);
 
-  protected readonly isEmpty = computed(() => this.name().trim() === '');
+  /** id of the person being edited, or null while only the add form is open. */
+  protected readonly editingId = signal<string | null>(null);
 
-  protected onNameInput(event: Event): void {
-    this.name.set((event.target as HTMLInputElement).value);
+  /**
+   * What the add form starts on. Replaced after every save so the form clears itself — and the
+   * relation carries over on purpose: whoever just entered one child is likely entering a second.
+   */
+  protected readonly addDraft = signal<HelperDraft>(emptyHelperDraft());
+
+  protected readonly editingDraft = computed(
+    (): HelperDraft => {
+      const person = this.helpers().find((entry) => entry.id === this.editingId());
+
+      return person === undefined ? emptyHelperDraft() : toHelperDraft(person);
+    },
+    { equal: isSameDraft },
+  );
+
+  protected openEditForm(helperId: string): void {
+    this.editingId.set(helperId);
   }
 
-  protected onRelationChange(event: Event): void {
-    this.relation.set((event.target as HTMLSelectElement).value as Relation);
+  protected closeEditForm(): void {
+    const helperId = this.editingId();
+
+    this.editingId.set(null);
+    this.refocusRow(helperId);
   }
 
-  protected onDeceasedChange(event: Event): void {
-    this.deceased.set((event.target as HTMLInputElement).checked);
+  protected onAdd(draft: HelperDraft): void {
+    this.added.emit(draft);
+    this.addDraft.set({ ...emptyHelperDraft(), relation: draft.relation });
   }
 
-  protected onSubmit(event: Event): void {
-    event.preventDefault();
-    this.added.emit({
-      name: this.name(),
-      relation: this.relation(),
-      deceased: this.deceased(),
-    });
-    this.resetForm();
+  protected onChange(helperId: string, draft: HelperDraft): void {
+    this.changed.emit({ id: helperId, draft });
+    this.closeEditForm();
   }
 
-  /** The relation stays: whoever just entered one child is most likely entering a second. */
-  private resetForm(): void {
-    this.name.set('');
-    this.deceased.set(false);
+  /** No refocus: the row that would have taken it is the one being removed. */
+  protected onRemove(helperId: string): void {
+    this.removed.emit(helperId);
+    this.editingId.set(null);
+  }
+
+  /** The row comes back only on the next render, so the button to focus does not exist yet here. */
+  private refocusRow(helperId: string | null): void {
+    if (helperId === null) return;
+
+    afterNextRender(
+      () =>
+        this.rows()
+          .find((row) => row.person().id === helperId)
+          ?.focus(),
+      { injector: this.injector },
+    );
   }
 }

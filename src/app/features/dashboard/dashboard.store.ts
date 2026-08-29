@@ -180,16 +180,30 @@ export class DashboardStore {
     this.helpersState.update((current) => [...current, toHelper(name, draft)]);
   }
 
+  /**
+   * The id stays, which is the whole point: a person can be renamed or moved into the family tree
+   * without losing the tasks assigned to them. Re-entering them by hand would not manage that.
+   */
+  updateHelper(helperId: string, draft: HelperDraft): void {
+    const name = draft.name.trim();
+    if (name === '') return;
+
+    this.isDirty = true;
+    this.helpersState.update((current) =>
+      current.map((helper) => (helper.id === helperId ? { ...helper, ...draft, name } : helper)),
+    );
+
+    // Whoever died cannot take a task on, so the task goes back to nobody rather than pointing at
+    // a name the assignment dropdown no longer offers.
+    if (draft.deceased) this.dropAssignmentsOf(helperId);
+  }
+
   removeHelper(helperId: string): void {
     this.isDirty = true;
     this.helpersState.update((current) => current.filter((helper) => helper.id !== helperId));
 
     // Otherwise tasks point at somebody who no longer exists.
-    this.assignmentsState.update((current) =>
-      Object.fromEntries(
-        Object.entries(current).filter(([, assignedId]) => assignedId !== helperId),
-      ),
-    );
+    this.dropAssignmentsOf(helperId);
   }
 
   /** An empty helperId clears the assignment — that is what the "nobody yet" option sends. */
@@ -203,6 +217,15 @@ export class DashboardStore {
 
       return next;
     });
+  }
+
+  /** Leaves the tasks themselves alone: they are still open, just nobody's again. */
+  private dropAssignmentsOf(helperId: string): void {
+    this.assignmentsState.update((current) =>
+      Object.fromEntries(
+        Object.entries(current).filter(([, assignedId]) => assignedId !== helperId),
+      ),
+    );
   }
 
   private startLoading(onCleanup: (fn: () => void) => void): void {

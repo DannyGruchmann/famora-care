@@ -8,6 +8,9 @@
  */
 export type Relation = 'parent' | 'sibling' | 'partner' | 'child' | 'grandchild' | 'other';
 
+/** What an unknown or missing relation reads as. Also what the form starts on. */
+export const DEFAULT_RELATION: Relation = 'other';
+
 /**
  * A person written into a folder. No account and no invitation — a name the owner typed.
  *
@@ -27,9 +30,20 @@ export interface HelperWithLoad extends Helper {
   openTaskCount: number;
 }
 
-/** What the form collects. The id is minted on save, never typed by anyone. */
+/**
+ * What the form collects. The id is minted on save, never typed by anyone — and on an edit it is
+ * the id staying put that lets a person be renamed without losing the tasks assigned to them.
+ */
 export interface HelperDraft {
   name: string;
   relation: Relation;
   deceased: boolean;
+}
+
+export function emptyHelperDraft(): HelperDraft {
+  return { name: '', relation: DEFAULT_RELATION, deceased: false };
+}
+
+export function toHelperDraft(person: Helper): HelperDraft {
+  return { name: person.name, relation: person.relation, deceased: person.deceased };
 }

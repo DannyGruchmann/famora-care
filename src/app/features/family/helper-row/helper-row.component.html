@@ -1,0 +1,16 @@
+<div class="helper-row">
+  <span class="helper-row__person">
+    <span class="helper-row__name">{{ person().name }}</span>
+    <span class="helper-row__load">{{ description() }}</span>
+  </span>
+
+  <button
+    #editButton
+    type="button"
+    class="helper-row__edit"
+    [attr.aria-label]="person().name + ' bearbeiten'"
+    (click)="edit.emit()"
+  >
+    <svg lucidePencil class="helper-row__edit-icon" stroke-width="1.75" aria-hidden="true"></svg>
+  </button>
+</div>

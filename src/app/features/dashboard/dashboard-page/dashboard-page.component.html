@@ -83,6 +83,7 @@
             [hint]="preset.familyHint"
             [tree]="store.familyTree()"
             (added)="store.addHelper($event)"
+            (changed)="store.updateHelper($event.id, $event.draft)"
             (removed)="store.removeHelper($event)"
           />
         </famora-section-card>
