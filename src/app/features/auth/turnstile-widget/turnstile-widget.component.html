@@ -1,1 +1,22 @@
-<div #container class="turnstile-widget"></div>
+<!-- Stays in the DOM even while hidden: retry() renders the next widget straight back into it. -->
+<div
+  #container
+  class="turnstile-widget__box"
+  [class.turnstile-widget__box--hidden]="message() !== undefined"
+></div>
+
+<div class="turnstile-widget__notice" role="status">
+  @if (message(); as text) {
+    <div class="turnstile-widget__problem">
+      <p class="turnstile-widget__message">{{ text }}</p>
+
+      @if (errorCode(); as code) {
+        <p class="turnstile-widget__code">Fehlercode {{ code }}</p>
+      }
+
+      <button type="button" class="turnstile-widget__retry" (click)="retry()">
+        Erneut versuchen
+      </button>
+    </div>
+  }
+</div>

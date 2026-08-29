@@ -33,7 +33,11 @@
     <!-- Absent entirely without a configured site key, rather than rendering a widget that could
          never verify — see turnstileSiteKey in the component. -->
     @if (turnstileSiteKey.length > 0) {
-      <famora-turnstile-widget [siteKey]="turnstileSiteKey" (verified)="captchaToken.set($event)" />
+      <famora-turnstile-widget
+        [siteKey]="turnstileSiteKey"
+        (verified)="captchaToken.set($event)"
+        (cleared)="captchaToken.set('')"
+      />
     }
 
     <famora-button

@@ -1,4 +1,79 @@
-.turnstile-widget {
+// Turnstile slot of the public auth forms: the widget itself plus the notice explaining a widget
+// that never came up.
+
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.turnstile-widget__box {
   display: flex;
   justify-content: center;
+}
+
+// Turnstile draws an error state of its own ("Verbinden zur Website nicht möglich") that a truthy
+// error-callback does not suppress — that only silences its console logging. Two messages saying
+// the same thing help nobody, and its iframe has a 300px minimum width that breaks out of the card
+// at 320px. So the widget makes way for the notice, and comes back with the next attempt.
+.turnstile-widget__box--hidden {
+  display: none;
+}
+
+// The notice element carries no styling at all. It stays in the DOM from the start, because a live
+// region that only appears together with its text is not announced reliably — and an unstyled,
+// empty one adds neither height nor a flex gap to the form around it. The spacing therefore sits
+// on the problem block below, which only exists when there is something to say. No display:contents
+// either: that has a history of dropping elements out of the accessibility tree in every engine.
+
+.turnstile-widget__problem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-xl);
+  // Deliberately not the danger colour: nobody did anything wrong here, and a second red block
+  // would compete with the submit error the layout shows above the card.
+  background-color: var(--color-surface-soft);
+}
+
+.turnstile-widget__message {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+}
+
+// Quiet on purpose: it means nothing to the visitor and everything in a support mail.
+.turnstile-widget__code {
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+}
+
+// Same compact pill as the register's add button — a full famora-button would outweigh the notice
+// it sits in. min-height keeps the tap target at 44px even though the label is small.
+.turnstile-widget__retry {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+
+  @include focus-ring;
+
+  &:hover {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary-soft);
+  }
 }
