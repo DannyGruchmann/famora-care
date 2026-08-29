@@ -1,7 +1,5 @@
 <p class="family-section__hint">{{ hint() }}</p>
 
-<famora-family-tree class="family-section__tree" [tree]="tree()" [emptyText]="emptyTree" />
-
 @if (helpers().length > 0) {
   <ul class="family-section__list">
     @for (helper of helpers(); track helper.id) {
@@ -11,8 +9,8 @@
             <famora-helper-form
               mode="edit"
               [formId]="'edit-' + helper.id"
-              [value]="editingDraft()"
-              (submitted)="onChange(helper.id, $event)"
+              [value]="editingName()"
+              (submitted)="onRename(helper.id, $event)"
               (cancelled)="closeEditForm()"
               (deleted)="onRemove(helper.id)"
             />
@@ -29,6 +27,6 @@
      person. Everywhere else it stays open, because entering a family is entering several people. -->
 @if (editingId() === null) {
   <div class="family-section__add">
-    <famora-helper-form formId="add-helper" [value]="addDraft()" (submitted)="onAdd($event)" />
+    <famora-helper-form formId="add-helper" (submitted)="added.emit($event)" />
   </div>
 }

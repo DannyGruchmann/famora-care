@@ -56,7 +56,7 @@
                     <li>
                       <famora-task-item
                         [task]="task"
-                        [helpers]="store.assignableHelpers()"
+                        [helpers]="store.helpers()"
                         (toggled)="store.toggleTask(task.id)"
                         (assigned)="store.assignTask(task.id, $event)"
                       />
@@ -81,9 +81,8 @@
           <famora-family-section
             [helpers]="store.helpers()"
             [hint]="preset.familyHint"
-            [tree]="store.familyTree()"
             (added)="store.addHelper($event)"
-            (changed)="store.updateHelper($event.id, $event.draft)"
+            (renamed)="store.renameHelper($event.id, $event.name)"
             (removed)="store.removeHelper($event)"
           />
         </famora-section-card>

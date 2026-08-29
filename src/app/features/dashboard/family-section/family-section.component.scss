@@ -1,4 +1,4 @@
-// Family section of the dashboard: the tree, the same people as a list, and the form feeding both.
+// Family section of the dashboard: the people helping out, and the form that adds the next one.
 
 :host {
   display: flex;
@@ -10,13 +10,6 @@
   font-size: 0.875rem;
   line-height: 1.625;
   color: var(--color-ink-muted);
-}
-
-// Set off against the card it sits in, so the tree reads as one picture rather than as loose rows.
-.family-section__tree {
-  padding: var(--space-5) var(--space-3);
-  border-radius: var(--radius-2xl);
-  background-color: var(--color-surface-soft);
 }
 
 .family-section__list {

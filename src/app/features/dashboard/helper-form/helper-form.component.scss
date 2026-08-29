@@ -1,0 +1,47 @@
+// Family section: the form that enters a person and the one that corrects them are the same form.
+
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.helper-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.helper-form__field-label {
+  @include sr-only;
+}
+
+// Grows into whatever is left, but never below the width at which a name stops being readable.
+.helper-form__input {
+  flex: 1 1 10rem;
+  min-width: 0;
+  padding: 0.625rem var(--space-4);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  outline: none;
+
+  &::placeholder {
+    color: var(--color-ink-soft);
+  }
+
+  &:focus-visible {
+    border-color: var(--color-primary);
+  }
+}
+
+// Three buttons do not fit beside the field at 320px. They wrap as a group rather than one by one,
+// so "Löschen" never ends up alone on a line looking like the main action.
+.helper-form__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}

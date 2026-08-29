@@ -5,10 +5,8 @@ import { map } from 'rxjs';
 import { LucidePrinter } from '@lucide/angular';
 import { Button } from '@/app/components/button/button.component';
 import { LoadingScreen } from '@/app/components/loading-screen/loading-screen.component';
-import { AuthService } from '@/app/features/auth/auth.service';
 import { DashboardStore } from '@/app/features/dashboard/dashboard.store';
 import { EntriesStore } from '@/app/features/entries/entries.store';
-import { FamilyTreeView } from '@/app/features/family/family-tree/family-tree.component';
 import { folderLabel } from '@/app/features/folders/folder.label';
 import { isPreparing } from '@/app/features/onboarding/onboarding.questions';
 import { FOLDER_ID_PARAM, folderPath, ROUTES } from '@/app/routes.constants';
@@ -30,7 +28,7 @@ const SAFEKEEPING =
  */
 @Component({
   selector: 'famora-emergency-sheet-page',
-  imports: [Button, FamilyTreeView, LoadingScreen, LucidePrinter],
+  imports: [Button, LoadingScreen, LucidePrinter],
   templateUrl: './emergency-sheet-page.component.html',
   styleUrl: './emergency-sheet-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,7 +42,6 @@ const SAFEKEEPING =
 export class EmergencySheetPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly auth = inject(AuthService);
 
   protected readonly folder = inject(DashboardStore);
   protected readonly entries = inject(EntriesStore);
@@ -72,12 +69,6 @@ export class EmergencySheetPage {
 
   protected readonly helpers = computed(() => this.folder.helpers());
 
-  /**
-   * Worth more on paper than the flat list of names it replaced: whoever finds this sheet has to
-   * work out who to call, and the tree says how these people belong together.
-   */
-  protected readonly tree = computed(() => this.folder.familyTree());
-
   /** Nothing written down yet. Offering to print an empty sheet would waste a walk to the printer. */
   protected readonly isEmpty = computed(
     () => this.sections().length === 0 && this.helpers().length === 0,
@@ -88,10 +79,6 @@ export class EmergencySheetPage {
       const folderId = this.folderId();
       this.folder.setFolderId(folderId);
       this.entries.setFolderId(folderId);
-    });
-
-    effect(() => {
-      this.folder.setViewerName(this.auth.firstName());
     });
 
     effect(() => {

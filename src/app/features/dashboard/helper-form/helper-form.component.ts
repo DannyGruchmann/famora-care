@@ -3,21 +3,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   ElementRef,
   input,
+  linkedSignal,
   output,
-  signal,
   viewChild,
 } from '@angular/core';
 import { Button } from '@/app/components/button/button.component';
-import { RELATIONS } from '../family.relations';
-import {
-  DEFAULT_RELATION,
-  emptyHelperDraft,
-  type HelperDraft,
-  type Relation,
-} from '../family.types';
 
 /**
  * 'add' stays open at the bottom of the list and has nothing to cancel or delete; 'edit' takes the
@@ -26,8 +18,8 @@ import {
 export type HelperFormMode = 'add' | 'edit';
 
 /**
- * Name, relation and the deceased flag — the same three fields whether somebody is being entered
- * for the first time or corrected afterwards, which is why there is one form and not two.
+ * The name of a person, whether they are being entered for the first time or corrected afterwards.
+ * One form rather than two, because the two cases differ in their buttons, not in their field.
  */
 @Component({
   selector: 'famora-helper-form',
@@ -37,20 +29,17 @@ export type HelperFormMode = 'add' | 'edit';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HelperForm {
-  /** Prefix for the field ids — several of these forms can sit on one page. */
+  /** Prefix for the field id — several of these forms can sit on one page. */
   readonly formId = input.required<string>();
   readonly mode = input<HelperFormMode>('add');
-  readonly value = input<HelperDraft>(emptyHelperDraft());
+  readonly value = input('');
 
-  readonly submitted = output<HelperDraft>();
+  readonly submitted = output<string>();
   readonly cancelled = output<void>();
   readonly deleted = output<void>();
 
-  protected readonly relations = RELATIONS;
-
-  protected readonly name = signal('');
-  protected readonly relation = signal<Relation>(DEFAULT_RELATION);
-  protected readonly deceased = signal(false);
+  /** Follows the input until somebody types; their text then wins until the input changes again. */
+  protected readonly name = linkedSignal(() => this.value());
 
   protected readonly isEditing = computed(() => this.mode() === 'edit');
   protected readonly submitLabel = computed(() => (this.isEditing() ? 'Speichern' : 'Hinzufügen'));
@@ -59,16 +48,6 @@ export class HelperForm {
   private readonly nameInput = viewChild.required<ElementRef<HTMLInputElement>>('nameInput');
 
   constructor() {
-    // Also what clears the add form after a save: the section hands back a fresh draft, and a new
-    // object is what makes this run again.
-    effect(() => {
-      const draft = this.value();
-
-      this.name.set(draft.name);
-      this.relation.set(draft.relation);
-      this.deceased.set(draft.deceased);
-    });
-
     afterNextRender(() => this.focusNameWhenEditing());
   }
 
@@ -91,22 +70,14 @@ export class HelperForm {
     this.name.set((event.target as HTMLInputElement).value);
   }
 
-  protected onRelationChange(event: Event): void {
-    this.relation.set((event.target as HTMLSelectElement).value as Relation);
-  }
-
-  protected onDeceasedChange(event: Event): void {
-    this.deceased.set((event.target as HTMLInputElement).checked);
-  }
-
   protected onSubmit(event: Event): void {
     event.preventDefault();
     if (this.isEmpty()) return;
 
-    this.submitted.emit({
-      name: this.name(),
-      relation: this.relation(),
-      deceased: this.deceased(),
-    });
+    this.submitted.emit(this.name());
+
+    // The add form stays open for the next person and clears itself. An edit form is closed by the
+    // section instead, and blanking it here would empty the row for a frame on the way out.
+    if (!this.isEditing()) this.name.set('');
   }
 }

@@ -102,24 +102,37 @@ _optionally_ point at a tree person.
 
 ## 3. Phase 0 — teardown
 
-Nothing here is committed by Claude. Hand the working tree over for review.
+Done on 2026-08-29. Recorded here because it turned out to be more than a plain revert.
 
 ```
 git revert --no-commit 98eb997
 git checkout 98eb997 -- src/app/features/auth/auth-layout/auth-layout.component.scss
 ```
 
-Then verify by hand:
+The revert conflicted, because two commits landed on top of `98eb997` after it:
+`2f1496f` (Turnstile, untouched by the revert) and `e40e6d5`, which reworked the helper section
+inside the very folder the revert deletes. Conflicts were resolved to the pre-tree state, and
+`src/app/features/family/` was removed in full.
 
-- `src/app/features/family/` is gone; `src/app/features/dashboard/family-section/` is back.
-- `Helper` is `{ id, name }` again and lives in `dashboard.types.ts`.
-- `folders.queries.ts` no longer imports from `features/family`.
-- The emergency sheet shows "Diese Menschen wissen Bescheid" with a flat list.
-- `auth-layout.component.scss` still has its `$bp-lg` blocks.
+**What was rescued from `e40e6d5`.** Helpers stay editable in place — that feature is independent of
+the tree and phase 3 depends on it: `renameHelper` keeps the id, which is what will later let a
+helper gain a `treePersonId` without losing their task assignments. Rescued and adapted to
+`Helper = { id, name }`:
 
-Gate: `npm run lint`, `npm test`, `npm run build`, `npx prettier --check .`
+- `dashboard/helper-form/` — one field now, not three. Uses `linkedSignal` to follow its input, and
+  clears itself on submit in 'add' mode. The old version passed a fresh draft object each time to
+  force a reset; with a plain string that trick does not work, and self-clearing is simpler anyway.
+- `dashboard/helper-row/` — name and workload, no relation.
+- `dashboard/family-section/` — list, edit-in-place, add form. No tree.
+- `DashboardStore.updateHelper(id, draft)` became `renameHelper(id, name)`. The extracted
+  `dropAssignmentsOf` went back inline into `removeHelper`, its only remaining caller.
 
-Leave `docs/family-tree-plan.md` (this file) as the only addition to the reverted state.
+Verified: `features/family/` gone · `Helper` is `{ id, name }` in `dashboard.types.ts` ·
+no source reference to `familyTree`, `HelperDraft`, `deceased` or `features/family` remains ·
+emergency sheet shows "Diese Menschen wissen Bescheid" as a flat list ·
+`auth-layout.component.scss` byte-identical to `98eb997`, all four `$bp-lg` blocks present.
+
+Gate: `ng lint` clean · 142 tests in 22 files green · `ng build` clean · Prettier clean.
 
 ---
 
@@ -294,13 +307,19 @@ family-tree/
   tree.queries.ts
   tree.layout.ts            + tree.layout.spec.ts
   tree.generations.ts       + tree.generations.spec.ts
-  family-tree.store.ts      + family-tree.store.spec.ts
+  family-tree.store.ts      + family-tree.store.spec.ts   route-scoped, one tree
+  my-trees.service.ts                                     root-level: which trees this account has
   family-tree-page/         full-screen route, provides the store
   tree-canvas/              pan/zoom surface, renders cards + SVG connectors
   person-card/              one person
   person-panel/             edit + "add parent / partner / child"
-  tree-summary-card/        the field in the folder dashboard
+  tree-summary-card/        the field in the folder dashboard, see 5.5
 ```
+
+Two stores on purpose. `family-tree.store.ts` is provided by the page and belongs to one tree, like
+`EntriesStore`. `my-trees.service.ts` is `providedIn: 'root'` because the dashboard card needs to
+know whether a tree exists at all, and that question is account-wide — putting it in
+`DashboardStore` would tie an account-level object to one folder.
 
 Sharing UI (`tree-members-panel/`, `invite-dialog/`) arrives in phase 4.
 
@@ -345,6 +364,41 @@ The ambition goes into the craft, not the show.
 
 CSP in `nginx.conf` is unaffected: no library, no external asset, no font beyond the two already
 self-hosted.
+
+### 5.5 The way in
+
+The first version had no entry point of its own — it was simply drawn inside the **Familie**
+section. This one needs a real one, and it has to work on day one, when no tree exists yet.
+
+**In the folder dashboard**, a `famora-section-card` like the others, heading "Stammbaum". It shows
+one of two things:
+
+- **No tree yet.** One sentence explaining what this is for, and a single button "Stammbaum
+  anlegen". Nothing else — no empty canvas, no placeholder diagram.
+- **A tree exists.** A summary line ("14 Personen, 4 Generationen") and a button "Stammbaum öffnen"
+  leading to the full-screen route.
+
+`SectionCard` currently accepts `icon: 'checklist' | 'documents' | 'family' | 'register'`. It needs
+a fifth value for the tree, added to the union and to the `@switch` in its template — a lucide
+`network` or `git-fork` reads as a tree without looking like the "Familie" people icon.
+
+**Creating the first tree** happens in one step, not a wizard: pressing the button inserts a
+`family_trees` row, makes the caller its owner, and navigates to `/stammbaum/:treeId`. The tree then
+opens empty with a single prompt to add the first person, who becomes `root_person_id`. Asking for a
+tree name up front is a form standing between somebody and the thing they wanted; the name can be
+edited later and defaults to something derived from the account.
+
+**Ownership is on the account, the entry point is in the folder.** That combination needs one
+lookup: "does this user own or belong to any tree?" A user with several folders sees the same tree
+card in each of them, which is correct — there is one tree, reachable from wherever you are. Load it
+in a small root-level service rather than in `DashboardStore`, which is deliberately scoped to one
+folder and must not learn about account-wide objects.
+
+**Route** `/stammbaum/:treeId` behind `requireAuthGuard`, added to `ROUTES` in
+`src/app/routes.constants.ts` with a `treePath(treeId)` helper alongside `folderPath` and
+`emergencySheetPath`. A tree id that belongs to nobody the caller knows returns nothing through RLS,
+which the page treats the way `DashboardStore` treats a missing folder: no explanation, just back to
+somewhere sensible.
 
 ---
 

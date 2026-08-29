@@ -8,8 +8,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { LucidePencil } from '@lucide/angular';
-import { findRelation } from '../family.relations';
-import type { HelperWithLoad } from '../family.types';
+import type { HelperWithLoad } from '../dashboard.types';
 
 function describeLoad(openTaskCount: number): string {
   if (openTaskCount === 0) return 'Noch keine Aufgabe übernommen';
@@ -41,12 +40,5 @@ export class HelperRow {
     this.editButton().nativeElement.focus();
   }
 
-  /** Relation first, because that is what the list is now sorted and read by. */
-  protected readonly description = computed(() => {
-    const person = this.person();
-    const relation = findRelation(person.relation).optionLabel;
-    if (person.deceased) return `${relation} · verstorben`;
-
-    return `${relation} · ${describeLoad(person.openTaskCount)}`;
-  });
+  protected readonly load = computed(() => describeLoad(this.person().openTaskCount));
 }

@@ -40,6 +40,16 @@ export interface Task extends TaskDefinition {
   isAutomatic: boolean;
 }
 
+/** A person helping with the folder. No account, just a name inside the folder. */
+export interface Helper {
+  id: string;
+  name: string;
+}
+
+export interface HelperWithLoad extends Helper {
+  openTaskCount: number;
+}
+
 /** A document needed along the way. Purely informational, nothing to tick off. */
 export interface RequiredDocument {
   id: string;

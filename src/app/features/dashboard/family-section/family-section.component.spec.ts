@@ -1,34 +1,21 @@
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import type { HelperWithLoad } from '../dashboard.types';
 import { FamilySection } from './family-section.component';
-import { buildFamilyTree } from '../family.tree';
-import type { HelperDraft, HelperWithLoad } from '../family.types';
 
 const HINT = 'Wer hilft Ihnen dabei?';
 
 function personWith(overrides: Partial<HelperWithLoad> = {}): HelperWithLoad {
-  return {
-    id: 'helper-1',
-    name: 'Anna',
-    relation: 'other',
-    deceased: false,
-    openTaskCount: 0,
-    ...overrides,
-  };
+  return { id: 'helper-1', name: 'Anna', openTaskCount: 0, ...overrides };
 }
 
 async function renderSection(people: HelperWithLoad[]): Promise<ComponentFixture<FamilySection>> {
   const fixture = TestBed.createComponent(FamilySection);
-  setPeople(fixture, people);
+  fixture.componentRef.setInput('helpers', people);
   fixture.componentRef.setInput('hint', HINT);
   await fixture.whenStable();
   fixture.detectChanges();
 
   return fixture;
-}
-
-function setPeople(fixture: ComponentFixture<FamilySection>, people: HelperWithLoad[]): void {
-  fixture.componentRef.setInput('helpers', people);
-  fixture.componentRef.setInput('tree', buildFamilyTree(people, 'Ich'));
 }
 
 function query<T extends Element>(fixture: ComponentFixture<FamilySection>, selector: string): T {
@@ -72,18 +59,17 @@ describe('FamilySection', () => {
     expect(fixture.nativeElement.querySelector('#add-helper-name')).toBeNull();
   });
 
-  it('reports the change against the id, which is what carries the assignments', async () => {
+  it('reports the rename against the id, which is what carries the assignments', async () => {
     const fixture = await renderSection([personWith()]);
-    const changed = vi.fn();
-    fixture.componentInstance.changed.subscribe(changed);
+    const renamed = vi.fn();
+    fixture.componentInstance.renamed.subscribe(renamed);
 
     await openEditForm(fixture);
     type(editNameInput(fixture), 'Anna Weber');
     fixture.detectChanges();
     query<HTMLFormElement>(fixture, '.helper-form').dispatchEvent(new Event('submit'));
 
-    const expected: HelperDraft = { name: 'Anna Weber', relation: 'other', deceased: false };
-    expect(changed).toHaveBeenCalledWith({ id: 'helper-1', draft: expected });
+    expect(renamed).toHaveBeenCalledWith({ id: 'helper-1', name: 'Anna Weber' });
   });
 
   /**
@@ -97,11 +83,27 @@ describe('FamilySection', () => {
     type(editNameInput(fixture), 'Anna Weber');
     fixture.detectChanges();
 
-    setPeople(fixture, [personWith({ openTaskCount: 3 })]);
+    fixture.componentRef.setInput('helpers', [personWith({ openTaskCount: 3 })]);
     await fixture.whenStable();
     fixture.detectChanges();
 
     expect(editNameInput(fixture).value).toBe('Anna Weber');
+  });
+
+  /** The add form stays open for the next person, so it has to empty itself after a save. */
+  it('clears the add form once the person has been reported', async () => {
+    const fixture = await renderSection([]);
+    const added = vi.fn();
+    fixture.componentInstance.added.subscribe(added);
+
+    const input = query<HTMLInputElement>(fixture, '#add-helper-name');
+    type(input, 'Bernd');
+    fixture.detectChanges();
+    query<HTMLFormElement>(fixture, '.helper-form').dispatchEvent(new Event('submit'));
+    fixture.detectChanges();
+
+    expect(added).toHaveBeenCalledWith('Bernd');
+    expect(query<HTMLInputElement>(fixture, '#add-helper-name').value).toBe('');
   });
 
   it('takes focus into the form and hands it back to the row afterwards', async () => {

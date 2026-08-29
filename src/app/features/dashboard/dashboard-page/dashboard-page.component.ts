@@ -13,10 +13,8 @@ import { LucidePrinter, LucideTrash2 } from '@lucide/angular';
 import { Button } from '@/app/components/button/button.component';
 import { ConfirmDialog } from '@/app/components/confirm-dialog/confirm-dialog.component';
 import { LoadingScreen } from '@/app/components/loading-screen/loading-screen.component';
-import { AuthService } from '@/app/features/auth/auth.service';
 import { EntriesPanel } from '@/app/features/entries/entries-panel/entries-panel.component';
 import { EntriesStore } from '@/app/features/entries/entries.store';
-import { FamilySection } from '@/app/features/family/family-section/family-section.component';
 import { folderLabel } from '@/app/features/folders/folder.label';
 import { FoldersQueries } from '@/app/features/folders/folders.queries';
 import { LegalFooter } from '@/app/features/legal/legal-footer/legal-footer.component';
@@ -26,6 +24,7 @@ import { URGENCY_ORDER } from '../dashboard.data';
 import { DashboardStore } from '../dashboard.store';
 import { DashboardAppBar } from '../dashboard-app-bar/dashboard-app-bar.component';
 import { DocumentsSection } from '../documents-section/documents-section.component';
+import { FamilySection } from '../family-section/family-section.component';
 import { ProgressHero } from '../progress-hero/progress-hero.component';
 import { SectionCard } from '../section-card/section-card.component';
 import { TaskItem } from '../task-item/task-item.component';
@@ -40,12 +39,11 @@ function describeEntryCount(count: number): string {
   return `${count} Einträge`;
 }
 
-/** Counts everybody in the folder, not just those who can take a task — the tree shows all. */
-function describeFamilyCount(count: number): string {
+function describeHelperCount(count: number): string {
   if (count === 0) return 'Noch niemand eingetragen';
-  if (count === 1) return '1 Person eingetragen';
+  if (count === 1) return '1 Person hilft mit';
 
-  return `${count} Personen eingetragen`;
+  return `${count} Personen helfen mit`;
 }
 
 @Component({
@@ -79,10 +77,10 @@ export class DashboardPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly folders = inject(FoldersQueries);
-  private readonly auth = inject(AuthService);
 
   protected readonly store = inject(DashboardStore);
   protected readonly entries = inject(EntriesStore);
+  protected readonly urgencies = URGENCY_ORDER;
 
   protected readonly isDeleteOpen = signal(false);
   protected readonly isDeleting = signal(false);
@@ -131,7 +129,7 @@ export class DashboardPage {
   );
 
   protected readonly helperSubtitle = computed(() =>
-    describeFamilyCount(this.store.helpers().length),
+    describeHelperCount(this.store.helpers().length),
   );
 
   /** Empty groups would otherwise leave a heading without a list underneath. */
@@ -165,12 +163,6 @@ export class DashboardPage {
     // The checklist does not read the register itself — it is told, so it stays testable alone.
     effect(() => {
       this.store.setFilledEntryKinds(this.entries.filledKinds());
-    });
-
-    // Same arrangement for the session: the store needs a name for the middle of the tree, not
-    // a dependency on auth.
-    effect(() => {
-      this.store.setViewerName(this.auth.firstName());
     });
   }
 

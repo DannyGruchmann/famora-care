@@ -62,29 +62,7 @@ describe('FoldersQueries.loadFolder', () => {
     const helpers = [{ id: 'h-1', name: 'Anna' }, { id: 'h-2' }, 'Bernd', null];
     const folder = await loadRow(rowWith({ helpers }));
 
-    expect(folder.helpers).toEqual([
-      { id: 'h-1', name: 'Anna', relation: 'other', deceased: false },
-    ]);
-  });
-
-  it('reads a helper written before the family tree existed as an unplaced, living person', async () => {
-    const helpers = [{ id: 'h-1', name: 'Anna' }];
-    const folder = await loadRow(rowWith({ helpers }));
-
-    expect(folder.helpers[0].relation).toBe('other');
-    expect(folder.helpers[0].deceased).toBe(false);
-  });
-
-  it('keeps a known relation and falls back to other for anything else', async () => {
-    const helpers = [
-      { id: 'h-1', name: 'Anna', relation: 'child', deceased: false },
-      { id: 'h-2', name: 'Bernd', relation: 'stepcousin', deceased: true },
-    ];
-    const folder = await loadRow(rowWith({ helpers }));
-
-    expect(folder.helpers[0].relation).toBe('child');
-    expect(folder.helpers[1].relation).toBe('other');
-    expect(folder.helpers[1].deceased).toBe(true);
+    expect(folder.helpers).toEqual([{ id: 'h-1', name: 'Anna' }]);
   });
 
   it('drops assignments that do not point at a helper id', async () => {

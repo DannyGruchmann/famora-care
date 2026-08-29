@@ -2,8 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import type { Database, Json } from '@/app/lib/database.types';
 import { SupabaseService } from '@/app/lib/supabase.service';
 import { GENERIC_ERROR, runQuery, toVoidResult, type ApiResult } from '@/app/lib/supabase-query';
-import { toRelation } from '@/app/features/family/family.relations';
-import type { Helper } from '@/app/features/family/family.types';
+import type { Helper } from '@/app/features/dashboard/dashboard.types';
 import type { OnboardingAnswers } from '@/app/features/onboarding/onboarding.types';
 import type { Folder, FolderProgress } from './folder.types';
 
@@ -22,33 +21,16 @@ function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((entry) => typeof entry === 'string');
 }
 
-/** What a row has to carry to be a person at all. Everything else is normalised, not required. */
-type NamedPerson = Record<string, unknown> & { id: string; name: string };
-
-function isNamedPerson(value: unknown): value is NamedPerson {
+function isHelper(value: unknown): value is Helper {
   return (
     isPlainObject(value) && typeof value['id'] === 'string' && typeof value['name'] === 'string'
   );
 }
 
-/**
- * A folder written before the family tree existed carries neither field. Reading them as "no
- * place in the tree" and "alive" is what keeps those folders working untouched — the columns are
- * jsonb, so there was no migration to add them with.
- */
-function toHelper(row: NamedPerson): Helper {
-  return {
-    id: row.id,
-    name: row.name,
-    relation: toRelation(row['relation']),
-    deceased: row['deceased'] === true,
-  };
-}
-
 function toHelpers(value: unknown): Helper[] {
   if (!Array.isArray(value)) return [];
 
-  return value.filter(isNamedPerson).map(toHelper);
+  return value.filter(isHelper);
 }
 
 /**
@@ -57,12 +39,7 @@ function toHelpers(value: unknown): Helper[] {
  * the domain type a clean interface instead of casting at the call site.
  */
 function helpersToJson(helpers: Helper[]): Json {
-  return helpers.map((helper) => ({
-    id: helper.id,
-    name: helper.name,
-    relation: helper.relation,
-    deceased: helper.deceased,
-  }));
+  return helpers.map((helper) => ({ id: helper.id, name: helper.name }));
 }
 
 function toAnswers(value: unknown): OnboardingAnswers {
