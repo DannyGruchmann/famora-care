@@ -82,6 +82,16 @@ export const routes: Routes = [
       ),
   },
   {
+    // Outside the folder routes on purpose: a tree belongs to the account, and it is reachable
+    // from whichever folder somebody happens to be standing in.
+    path: pathOf(ROUTES.tree),
+    canActivate: [requireAuthGuard],
+    loadComponent: () =>
+      import('@/app/features/family-tree/family-tree-page/family-tree-page.component').then(
+        (m) => m.FamilyTreePage,
+      ),
+  },
+  {
     path: pathOf(ROUTES.folder),
     canActivate: [requireAuthGuard],
     loadComponent: () =>

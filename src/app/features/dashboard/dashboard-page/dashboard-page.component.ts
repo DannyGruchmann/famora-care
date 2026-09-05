@@ -15,6 +15,9 @@ import { ConfirmDialog } from '@/app/components/confirm-dialog/confirm-dialog.co
 import { LoadingScreen } from '@/app/components/loading-screen/loading-screen.component';
 import { EntriesPanel } from '@/app/features/entries/entries-panel/entries-panel.component';
 import { EntriesStore } from '@/app/features/entries/entries.store';
+import { MyTreesService } from '@/app/features/family-tree/my-trees.service';
+import { TreeSummaryCard } from '@/app/features/family-tree/tree-summary-card/tree-summary-card.component';
+import { describeTree } from '@/app/features/family-tree/tree.labels';
 import { folderLabel } from '@/app/features/folders/folder.label';
 import { FoldersQueries } from '@/app/features/folders/folders.queries';
 import { LegalFooter } from '@/app/features/legal/legal-footer/legal-footer.component';
@@ -60,6 +63,7 @@ function describeHelperCount(count: number): string {
     ProgressHero,
     SectionCard,
     TaskItem,
+    TreeSummaryCard,
     LucideTrash2,
     LucidePrinter,
     RouterLink,
@@ -80,6 +84,7 @@ export class DashboardPage {
 
   protected readonly store = inject(DashboardStore);
   protected readonly entries = inject(EntriesStore);
+  protected readonly trees = inject(MyTreesService);
   protected readonly urgencies = URGENCY_ORDER;
 
   protected readonly isDeleteOpen = signal(false);
@@ -131,6 +136,20 @@ export class DashboardPage {
   protected readonly helperSubtitle = computed(() =>
     describeHelperCount(this.store.helpers().length),
   );
+
+  /**
+   * Says what is in the tree before it is opened, or invites making one when there is none. The
+   * order matters: the count arrives a moment after the tree itself, and reading it first would
+   * make the card announce "no tree yet" to somebody who has one.
+   */
+  protected readonly treeSubtitle = computed(() => {
+    if (!this.trees.hasTree()) return 'Noch kein Stammbaum angelegt';
+
+    const summary = this.trees.summary();
+    if (summary === null) return 'Stammbaum wird geladen';
+
+    return describeTree(summary.personCount, summary.generationCount);
+  });
 
   /** Empty groups would otherwise leave a heading without a list underneath. */
   protected readonly filledUrgencies = computed(() => {

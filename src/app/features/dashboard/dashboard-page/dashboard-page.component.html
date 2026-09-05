@@ -72,6 +72,10 @@
           <famora-documents-section [documents]="store.documents()" [hint]="preset.documentsHint" />
         </famora-section-card>
 
+        <famora-section-card icon="tree" heading="Stammbaum" [subtitle]="treeSubtitle()">
+          <famora-tree-summary-card />
+        </famora-section-card>
+
         <famora-section-card
           icon="family"
           heading="Familie"

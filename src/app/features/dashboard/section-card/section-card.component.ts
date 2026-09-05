@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, input, linkedSignal } from '@angula
 import {
   LucideChevronDown,
   LucideFolderOpen,
+  LucideGitFork,
   LucideListChecks,
   LucideNotebookPen,
   LucideUsers,
 } from '@lucide/angular';
 
-export type SectionCardIcon = 'checklist' | 'documents' | 'family' | 'register';
+export type SectionCardIcon = 'checklist' | 'documents' | 'family' | 'register' | 'tree';
 
 /**
  * Collapsible section of the dashboard. `heading` rather than `title`: the latter is a global HTML
@@ -15,7 +16,14 @@ export type SectionCardIcon = 'checklist' | 'documents' | 'family' | 'register';
  */
 @Component({
   selector: 'famora-section-card',
-  imports: [LucideListChecks, LucideFolderOpen, LucideUsers, LucideNotebookPen, LucideChevronDown],
+  imports: [
+    LucideListChecks,
+    LucideFolderOpen,
+    LucideUsers,
+    LucideNotebookPen,
+    LucideGitFork,
+    LucideChevronDown,
+  ],
   templateUrl: './section-card.component.html',
   styleUrl: './section-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
