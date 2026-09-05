@@ -3,9 +3,9 @@
 -- =============================================================================
 --
 -- WHAT IS THIS?
--- Removes 19 tables the Angular app never touches. It queries exactly two:
--- "folders" and "folder_entries". Everything listed below is scaffolding from
--- the React version that was never filled — every one of them holds 0 rows.
+-- Removes 19 tables the Angular app never touches. It queries exactly seven:
+-- "folders", "folder_entries" and the five tables of family-tree.sql.
+-- Everything listed below is scaffolding from an earlier version of Famora.
 --
 -- Among them are four tables preparing a Stripe billing flow that was never
 -- built, and "document_analysis", which contradicts the decision that Famora
@@ -20,8 +20,38 @@
 --
 -- HOW IT PROTECTS ITSELF
 -- The whole thing is one DO block, which Postgres runs as a single transaction.
--- It counts every table first and raises if any of them has gained a row in the
--- meantime. A raise rolls the entire block back: either all 19 go, or none do.
+-- It counts every table first and raises if it finds a row it will not throw
+-- away. A raise rolls the entire block back: either all 19 go, or none do.
+--
+-- THREE OF THEM ARE NOT EMPTY, AND THAT IS EXPECTED
+-- When this file was first written every table held 0 rows. It has since turned
+-- out that three do not (checked 2026-09-05):
+--
+--   audit_logs     3 rows   'phase13_probe_final', 'phase8b-live-check',
+--                           'billing_checkout_completed'
+--   subscriptions  1 row    stripe_customer_id 'cus_phase13final_...'
+--   entitlements   1 row    the same invented customer
+--
+-- All five were written by the old app's own release checks in May 2026, all
+-- five carry user_id null, and the Stripe customer they name never existed.
+-- So the rule below is not "ignore rows in these three" but the narrower and
+-- checkable "no row here belongs to an account". The moment a real one appears,
+-- this file refuses to run — which is the whole point of the guard.
+--
+-- WHAT SUCCESS LOOKS LIKE
+-- "Success. No rows returned". The Supabase SQL editor does not print notices,
+-- so the "Dropped 19 legacy tables" line at the bottom is never shown — a run
+-- that worked and a run that did nothing look exactly the same. To see which it
+-- was, count what is left:
+--
+--   select count(*) from pg_class c
+--   join pg_namespace n on n.oid = c.relnamespace
+--   where n.nspname = 'public' and c.relkind = 'r';
+--
+-- Expected afterwards: 7 — folders, folder_entries and the five tree tables.
+--
+-- A run that refused says so loudly instead: an abort is an error, and the
+-- editor prints the "Aborted: ..." message in red.
 --
 -- NOT RE-RUNNABLE IN THE SENSE OF UNDOING. Tables dropped here are gone.
 -- =============================================================================
@@ -49,19 +79,31 @@ declare
     'entitlements',
     'organization_placeholders'
   ];
+
+  -- The three from the header. Each has a user_id column, which is what makes
+  -- the narrower check possible.
+  probe_tables text[] := array['audit_logs', 'subscriptions', 'entitlements'];
+
   target text;
-  occupied bigint;
+  unexpected bigint;
 begin
-  -- First pass: refuse the whole operation if anything is no longer empty.
+  -- First pass: refuse the whole operation over a single row worth keeping.
   foreach target in array dead_tables loop
     if to_regclass(format('public.%I', target)) is null then
       continue;
     end if;
 
-    execute format('select count(*) from public.%I', target) into occupied;
+    if target = any(probe_tables) then
+      execute format('select count(*) from public.%I where user_id is not null', target)
+        into unexpected;
+    else
+      execute format('select count(*) from public.%I', target) into unexpected;
+    end if;
 
-    if occupied > 0 then
-      raise exception 'Aborted: public.% holds % row(s). Nothing was dropped.', target, occupied;
+    if unexpected > 0 then
+      raise exception
+        'Aborted: public.% holds % row(s) this file will not throw away. Nothing was dropped.',
+        target, unexpected;
     end if;
   end loop;
 
