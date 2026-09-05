@@ -1,0 +1,28 @@
+// Folder dashboard: the field that leads into the family tree, or offers to create one.
+
+.tree-summary-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.tree-summary-card__intro,
+.tree-summary-card__summary {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+}
+
+.tree-summary-card__summary {
+  color: var(--color-ink);
+}
+
+.tree-summary-card__error {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--color-danger);
+}

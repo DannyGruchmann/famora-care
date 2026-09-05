@@ -10,6 +10,8 @@ export const ROUTES = {
   folder: '/ordner/:folderId',
   /** The register on paper. Printed, it works without a login — which is the whole point. */
   emergencySheet: '/ordner/:folderId/notfallmappe',
+  /** Full screen, and outside the folder: one tree belongs to the account, not to one folder. */
+  tree: '/stammbaum/:treeId',
   imprint: '/impressum',
   privacy: '/datenschutz',
 } as const;
@@ -19,6 +21,9 @@ export const FOLDER_PARAM = 'ordner';
 
 /** Route parameter of the folder route — the `:folderId` segment above. */
 export const FOLDER_ID_PARAM = 'folderId';
+
+/** Route parameter of the tree route — the `:treeId` segment above. */
+export const TREE_ID_PARAM = 'treeId';
 
 /**
  * Query parameter carrying the page a guard intercepted someone on, so signing in continues to
@@ -38,4 +43,8 @@ export function folderPath(folderId: string): string {
 
 export function emergencySheetPath(folderId: string): string {
   return withFolderId(ROUTES.emergencySheet, folderId);
+}
+
+export function treePath(treeId: string): string {
+  return ROUTES.tree.replace(`:${TREE_ID_PARAM}`, treeId);
 }

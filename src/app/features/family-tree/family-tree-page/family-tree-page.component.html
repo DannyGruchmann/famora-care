@@ -1,0 +1,91 @@
+@if (isLoading()) {
+  <famora-loading-screen label="Stammbaum wird geladen" />
+} @else {
+  <div class="family-tree-page">
+    <header class="family-tree-page__bar">
+      <famora-icon-button label="Zurück" (click)="onBack()">
+        <svg lucideArrowLeft class="family-tree-page__bar-icon" aria-hidden="true"></svg>
+      </famora-icon-button>
+
+      <div class="family-tree-page__titles">
+        @if (isRenaming()) {
+          <form
+            class="family-tree-page__rename"
+            (submit)="$event.preventDefault(); onRenamed(draftName())"
+          >
+            <label class="family-tree-page__rename-label" for="tree-name"
+              >Name des Stammbaums</label
+            >
+            <input
+              id="tree-name"
+              type="text"
+              class="family-tree-page__rename-input"
+              maxlength="120"
+              [value]="draftName()"
+              (input)="onRenameInput($event)"
+            />
+            <button type="submit" class="family-tree-page__rename-save">Speichern</button>
+          </form>
+        } @else {
+          <h1 class="family-tree-page__heading">{{ heading() }}</h1>
+          <p class="family-tree-page__subtitle">{{ subtitle() }}</p>
+        }
+      </div>
+
+      @if (store.isOwner() && !isRenaming()) {
+        <famora-icon-button label="Stammbaum umbenennen" (click)="startRenaming()">
+          <svg lucidePencil class="family-tree-page__bar-icon" aria-hidden="true"></svg>
+        </famora-icon-button>
+      }
+    </header>
+
+    @if (store.error(); as message) {
+      <p class="family-tree-page__error" role="alert">{{ message }}</p>
+    }
+
+    @if (store.isEmpty()) {
+      <div class="family-tree-page__start">
+        <h2 class="family-tree-page__start-heading">Die erste Person</h2>
+        <p class="family-tree-page__start-hint">{{ firstPersonHint }}</p>
+
+        @if (store.canEdit()) {
+          <famora-person-form
+            formId="first-person"
+            [value]="emptyDraft"
+            [busy]="store.isSaving()"
+            submitLabel="Hinzufügen"
+            (submitted)="addFirstPerson($event)"
+            (cancelled)="onBack()"
+          />
+        }
+      </div>
+    } @else {
+      <div class="family-tree-page__body">
+        <div class="family-tree-page__canvas">
+          <famora-tree-canvas
+            [layout]="layout()"
+            [rootId]="store.tree()?.rootPersonId ?? null"
+            [selectedId]="selectedId()"
+            (personSelected)="onSelect($event)"
+          />
+        </div>
+
+        @if (selectedPerson(); as person) {
+          <aside class="family-tree-page__panel">
+            <famora-person-panel
+              [person]="person"
+              [canEdit]="store.canEdit()"
+              [isRoot]="isSelectedRoot()"
+              [busy]="store.isSaving()"
+              (saved)="onSaved($event)"
+              (relativeAdded)="onRelativeAdded($event)"
+              (removed)="onRemoved()"
+              (rootChosen)="onRootChosen()"
+              (closed)="selectedId.set(null)"
+            />
+          </aside>
+        }
+      </div>
+    }
+  </div>
+}

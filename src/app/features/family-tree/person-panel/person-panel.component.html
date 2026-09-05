@@ -1,0 +1,94 @@
+<div class="person-panel">
+  <div class="person-panel__header">
+    <div class="person-panel__identity">
+      <h2 class="person-panel__name">{{ person().name }}</h2>
+
+      @if (lifespan() !== '') {
+        <p class="person-panel__years">{{ lifespan() }}</p>
+      }
+
+      @if (isRoot()) {
+        <p class="person-panel__role">Startperson des Stammbaums</p>
+      }
+    </div>
+
+    <famora-icon-button label="Schließen" (click)="closed.emit()">
+      <svg lucideX class="person-panel__close-icon" aria-hidden="true"></svg>
+    </famora-icon-button>
+  </div>
+
+  @switch (mode()) {
+    @case ('view') {
+      @if (canEdit()) {
+        <div class="person-panel__section">
+          <p class="person-panel__section-label">Hinzufügen</p>
+          <div class="person-panel__buttons">
+            @for (kind of relativeKinds; track kind) {
+              <famora-button
+                variant="secondary"
+                [attr.aria-label]="fullLabel(kind)"
+                (click)="show(kind)"
+              >
+                {{ shortLabel(kind) }}
+              </famora-button>
+            }
+          </div>
+        </div>
+
+        <div class="person-panel__section">
+          <p class="person-panel__section-label">Diese Person</p>
+          <div class="person-panel__buttons">
+            <famora-button variant="secondary" (click)="show('edit')">Bearbeiten</famora-button>
+
+            @if (!isRoot()) {
+              <famora-button variant="ghost" (click)="rootChosen.emit()">
+                Als Startperson
+              </famora-button>
+            }
+
+            <famora-button variant="danger" (click)="isConfirmingDelete.set(true)">
+              Entfernen
+            </famora-button>
+          </div>
+        </div>
+      } @else {
+        <p class="person-panel__note">Sie können diesen Stammbaum ansehen, aber nicht ändern.</p>
+      }
+    }
+
+    @case ('edit') {
+      <famora-person-form
+        formId="person-edit"
+        [value]="draft()"
+        [busy]="busy()"
+        [takesFocus]="true"
+        submitLabel="Speichern"
+        (submitted)="onSaved($event)"
+        (cancelled)="show('view')"
+      />
+    }
+
+    @default {
+      <p class="person-panel__section-label">{{ addHeading() }}</p>
+      <famora-person-form
+        formId="person-add"
+        [value]="emptyDraft"
+        [busy]="busy()"
+        [takesFocus]="true"
+        submitLabel="Hinzufügen"
+        (submitted)="onRelativeSubmitted($event)"
+        (cancelled)="show('view')"
+      />
+    }
+  }
+</div>
+
+<famora-confirm-dialog
+  [open]="isConfirmingDelete()"
+  [heading]="deleteHeading()"
+  [description]="deleteDescription"
+  confirmLabel="Ja, entfernen"
+  [confirmDisabled]="busy()"
+  (confirmed)="onDeleteConfirmed()"
+  (cancelled)="isConfirmingDelete.set(false)"
+/>

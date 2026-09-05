@@ -1,0 +1,71 @@
+// Family tree: the form for entering and correcting one person.
+
+.person-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.person-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.person-form__label {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+}
+
+.person-form__input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-ink);
+}
+
+.person-form__input:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+.person-form__input--year {
+  max-width: 8rem;
+}
+
+.person-form__check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+}
+
+.person-form__checkbox {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--color-primary);
+}
+
+.person-form__check-text {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: var(--color-ink);
+}
+
+.person-form__error {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--color-danger);
+}
+
+.person-form__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

@@ -1,0 +1,72 @@
+<div class="tree-canvas">
+  <div
+    #viewport
+    class="tree-canvas__viewport"
+    tabindex="0"
+    role="group"
+    aria-label="Stammbaum. Mit den Pfeiltasten verschieben, mit Plus und Minus zoomen, mit Null zur Startperson."
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp($event)"
+    (pointercancel)="onPointerUp($event)"
+    (keydown)="onKeyDown($event)"
+    (wheel)="onWheel($event)"
+  >
+    <div
+      class="tree-canvas__surface"
+      [class.tree-canvas__surface--dragging]="isDragging()"
+      [style.transform]="surfaceStyle()"
+    >
+      <svg
+        class="tree-canvas__lines"
+        [attr.width]="layout().size.width"
+        [attr.height]="layout().size.height"
+        aria-hidden="true"
+      >
+        @for (connector of layout().connectors; track connector.id) {
+          <path class="tree-canvas__line" [attr.d]="connector.path" />
+        }
+      </svg>
+
+      @for (row of generations(); track $index) {
+        <div role="group" [attr.aria-label]="generationLabel($index)">
+          <!-- The click is bound here because the card renders a real button, and that button's
+               click is what bubbles up. There is no bare div acting as a control. -->
+          @for (node of row; track node.person.id) {
+            <famora-person-card
+              class="tree-canvas__node"
+              [style.left.px]="node.x"
+              [style.top.px]="node.y"
+              [style.width.px]="cardWidth"
+              [style.height.px]="cardHeight"
+              [person]="node.person"
+              [isRoot]="node.person.id === rootId()"
+              [isSelected]="node.person.id === selectedId()"
+              (click)="onCardClick(node.person.id)"
+            />
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (!isEmpty()) {
+    <div class="tree-canvas__controls">
+      <famora-icon-button label="Vergrößern" (click)="zoomIn()">
+        <svg lucidePlus class="tree-canvas__control-icon" aria-hidden="true"></svg>
+      </famora-icon-button>
+
+      <famora-icon-button label="Verkleinern" (click)="zoomOut()">
+        <svg lucideMinus class="tree-canvas__control-icon" aria-hidden="true"></svg>
+      </famora-icon-button>
+
+      <famora-icon-button label="Alles zeigen" (click)="showAll()">
+        <svg lucideMaximize class="tree-canvas__control-icon" aria-hidden="true"></svg>
+      </famora-icon-button>
+
+      <famora-icon-button label="Zur Startperson" (click)="showRoot()">
+        <svg lucideCrosshair class="tree-canvas__control-icon" aria-hidden="true"></svg>
+      </famora-icon-button>
+    </div>
+  }
+</div>

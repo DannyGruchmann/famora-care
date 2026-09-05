@@ -1,0 +1,18 @@
+<button
+  type="button"
+  class="person-card"
+  [class.person-card--root]="isRoot()"
+  [class.person-card--selected]="isSelected()"
+  [class.person-card--deceased]="person().deceased"
+  [attr.aria-current]="isSelected() ? 'true' : null"
+>
+  <span class="person-card__name">{{ person().name }}</span>
+
+  @if (lifespan() !== '') {
+    <span class="person-card__years">{{ lifespan() }}</span>
+  }
+
+  @if (isRoot()) {
+    <span class="person-card__role">Startperson</span>
+  }
+</button>

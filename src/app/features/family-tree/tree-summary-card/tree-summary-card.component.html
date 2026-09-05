@@ -1,0 +1,20 @@
+<div class="tree-summary-card">
+  <!-- The loading branch is not politeness. Without it the card offers "anlegen" for the moment
+       before the answer arrives, and a quick press would create a second tree for somebody who
+       already has one. -->
+  @if (trees.status() === 'loading') {
+    <p class="tree-summary-card__intro">Stammbaum wird geladen …</p>
+  } @else if (trees.hasTree()) {
+    <p class="tree-summary-card__summary">{{ summaryLine() }}</p>
+    <famora-button variant="secondary" (click)="openTree()">Stammbaum öffnen</famora-button>
+  } @else {
+    <p class="tree-summary-card__intro">{{ intro }}</p>
+    <famora-button variant="secondary" [disabled]="trees.isCreating()" (click)="createTree()">
+      {{ createLabel() }}
+    </famora-button>
+  }
+
+  @if (trees.error(); as message) {
+    <p class="tree-summary-card__error" role="alert">{{ message }}</p>
+  }
+</div>

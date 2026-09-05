@@ -1,0 +1,84 @@
+// Family tree: the surface the tree is drawn on, plus the four movement buttons over it.
+
+.tree-canvas {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+}
+
+// The canvas moves inside itself. The page never scrolls sideways because of it, which is what
+// keeps the 320 px rule intact on a tree that is metres wide.
+.tree-canvas__viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-2xl);
+  background-color: var(--color-base);
+  // The dot grid. It is the thing that says "this surface moves" without a line of instruction.
+  background-image: radial-gradient(var(--color-line-strong) 1px, transparent 1px);
+  background-size: 24px 24px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.tree-canvas__viewport:active {
+  cursor: grabbing;
+}
+
+.tree-canvas__viewport:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.tree-canvas__surface {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  transition: transform 160ms ease-out;
+}
+
+.tree-canvas__lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+}
+
+.tree-canvas__line {
+  fill: none;
+  stroke: var(--color-line-strong);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.tree-canvas__node {
+  position: absolute;
+  display: block;
+}
+
+.tree-canvas__controls {
+  position: absolute;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.tree-canvas__control-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+// A drag has to feel immediate. Only the jumps a button makes are worth easing.
+.tree-canvas__surface--dragging {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tree-canvas__surface {
+    transition: none;
+  }
+}

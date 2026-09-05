@@ -1,0 +1,66 @@
+<form class="person-form" (submit)="onSubmit($event)">
+  <div class="person-form__field">
+    <label class="person-form__label" [attr.for]="fieldId('name')">Name</label>
+    <input
+      #nameInput
+      [id]="fieldId('name')"
+      type="text"
+      class="person-form__input"
+      placeholder="Anna Berger"
+      maxlength="120"
+      [value]="name()"
+      (input)="onNameInput($event)"
+    />
+  </div>
+
+  <div class="person-form__field">
+    <label class="person-form__label" [attr.for]="fieldId('birth')">Geburtsjahr</label>
+    <input
+      [id]="fieldId('birth')"
+      type="text"
+      inputmode="numeric"
+      class="person-form__input person-form__input--year"
+      placeholder="1951"
+      maxlength="4"
+      [value]="birthYear()"
+      (input)="onBirthYearInput($event)"
+    />
+  </div>
+
+  <label class="person-form__check">
+    <input
+      type="checkbox"
+      class="person-form__checkbox"
+      [checked]="deceased()"
+      (change)="onDeceasedChange($event)"
+    />
+    <span class="person-form__check-text">verstorben</span>
+  </label>
+
+  @if (deceased()) {
+    <div class="person-form__field">
+      <label class="person-form__label" [attr.for]="fieldId('death')">Sterbejahr</label>
+      <input
+        [id]="fieldId('death')"
+        type="text"
+        inputmode="numeric"
+        class="person-form__input person-form__input--year"
+        placeholder="2019"
+        maxlength="4"
+        [value]="deathYear()"
+        (input)="onDeathYearInput($event)"
+      />
+    </div>
+  }
+
+  @if (error(); as message) {
+    <p class="person-form__error" role="alert">{{ message }}</p>
+  }
+
+  <div class="person-form__buttons">
+    <famora-button type="submit" variant="primary" [disabled]="!canSubmit()">
+      {{ submitLabel() }}
+    </famora-button>
+    <famora-button variant="ghost" (click)="cancelled.emit()">Abbrechen</famora-button>
+  </div>
+</form>

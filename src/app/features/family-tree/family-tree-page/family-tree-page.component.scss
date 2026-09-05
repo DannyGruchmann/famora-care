@@ -1,0 +1,153 @@
+// Family tree: the full screen page — title bar, canvas, and the panel for the selected person.
+
+.family-tree-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  height: 100dvh;
+  padding: var(--space-4);
+  background: var(--color-base);
+}
+
+.family-tree-page__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.family-tree-page__bar-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.family-tree-page__titles {
+  flex: 1;
+  min-width: 0;
+}
+
+.family-tree-page__heading {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  line-height: 1.2;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.family-tree-page__subtitle {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+}
+
+.family-tree-page__rename {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.family-tree-page__rename-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.family-tree-page__rename-input {
+  flex: 1;
+  min-width: 10rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-ink);
+}
+
+.family-tree-page__rename-save {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.family-tree-page__error {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--color-danger);
+}
+
+.family-tree-page__body {
+  display: flex;
+  flex: 1;
+  gap: var(--space-4);
+  min-height: 0;
+}
+
+.family-tree-page__canvas {
+  flex: 1;
+  min-width: 0;
+}
+
+.family-tree-page__panel {
+  width: 20rem;
+  overflow-y: auto;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface);
+}
+
+.family-tree-page__start {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: min(28rem, 100%);
+  margin: var(--space-8) auto 0;
+}
+
+.family-tree-page__start-heading {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  color: var(--color-ink);
+}
+
+.family-tree-page__start-hint {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+}
+
+// Under 60 rem the panel sits below the canvas instead of beside it, so the tree keeps the width.
+// The page stops being exactly one screen tall here and scrolls instead: a fixed 60dvh canvas and
+// a panel underneath do not both fit in 100dvh, and clipping the panel would hide its buttons.
+@media (max-width: 60rem) {
+  .family-tree-page {
+    height: auto;
+    min-height: 100dvh;
+  }
+
+  .family-tree-page__body {
+    flex-direction: column;
+  }
+
+  .family-tree-page__canvas {
+    height: 60dvh;
+  }
+
+  .family-tree-page__panel {
+    width: 100%;
+  }
+}
